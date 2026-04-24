@@ -33,19 +33,22 @@ export async function POST(req: NextRequest) {
 
   const parsed = applicationSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: parsed.error.errors[0].message } }, { status: 400 });
+    return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: (parsed.error as any).errors[0].message } }, { status: 400 });
   }
+
 
   const { internship_id, motivation_letter, relevant_experience, hours_per_week, linkedin_url } = parsed.data;
 
   // 1. Check profile completeness >= 70
-  const { data: profile } = await supabase
+  const { data: profileRaw } = await supabase
     .from('profiles')
     .select('profile_completeness, is_suspended')
     .eq('id', user.id)
     .single();
 
-  if (!profile) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Profile not found.' } }, { status: 404 });
+  if (!profileRaw) return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Profile not found.' } }, { status: 404 });
+  const profile = profileRaw as any;
+
   if (profile.is_suspended) return NextResponse.json({ success: false, error: { code: 'FORBIDDEN', message: 'Your account is suspended.' } }, { status: 403 });
   if (profile.profile_completeness < 70) {
     return NextResponse.json({

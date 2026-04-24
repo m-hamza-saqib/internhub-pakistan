@@ -27,8 +27,9 @@ export async function PATCH(
 
   const parsed = reviewProjectSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+    return NextResponse.json({ error: (parsed.error as any).errors[0].message }, { status: 400 });
   }
+
 
   const { action, feedback } = parsed.data;
 
@@ -88,7 +89,7 @@ export async function PATCH(
 
     if (totalProjects?.length === passedProjects?.length) {
       // Potentially notify user that they are eligible for certificate
-      await adminClient.from('notifications').insert({
+      await (adminClient.from('notifications') as any).insert({
         user_id: submission.user_id,
         type: 'certificate',
         title: 'All Projects Completed! 🏆',
@@ -96,6 +97,7 @@ export async function PATCH(
         link: '/certificates',
         is_read: false,
       });
+
     }
   }
 
