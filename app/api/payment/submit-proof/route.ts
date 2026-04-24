@@ -60,7 +60,11 @@ export async function POST(req: NextRequest) {
 
   if (insertError) {
     console.error('Payment proof insert error:', insertError);
-    return NextResponse.json({ error: 'Failed to submit proof. Please try again.' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to submit proof.', 
+      details: insertError.message,
+      code: insertError.code 
+    }, { status: 500 });
   }
 
   // Notify admin via in-app notification

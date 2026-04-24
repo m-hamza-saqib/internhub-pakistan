@@ -112,11 +112,14 @@ function EnrollContent() {
       const res = await fetch('/api/payment/submit-proof', { method: 'POST', body: fd });
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Submission failed');
+      if (!res.ok) {
+        const errorMsg = data.details ? `${data.error} (${data.details})` : (data.error || 'Submission failed');
+        throw new Error(errorMsg);
+      }
 
       setStep('submitted');
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.message, { duration: 5000 });
     } finally {
       setSubmitting(false);
     }
