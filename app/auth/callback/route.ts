@@ -4,36 +4,36 @@ import { NextResponse } from 'next/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+  const next = searchParams.get('next') ?? '/';
 
   if (code) {
     const supabase = await createClient();
     const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code);
     
     if (!error && session?.user) {
-      // Ensure profile exists (Sync logic for OAuth users)
+      const user = session.user;
+      // Ensure profile exists (Sync logic for OAuth and Email signups)
       const { data: profile } = await supabase
         .from('profiles')
         .select('id')
-        .eq('id', session.user.id)
+        .eq('id', user.id)
         .single();
 
       if (!profile) {
-        const emailBase = session.user.email?.split('@')[0] || 'user';
-        const username = `${emailBase}_${Math.random().toString(36).slice(2, 7)}`;
-        await (supabase.from('profiles') as any).insert({
-          id: session.user.id,
-          username,
-          full_name: session.user.user_metadata.full_name || emailBase || 'User',
-          email: session.user.email!,
+        await supabase.from('profiles').insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
           role: 'intern',
-          avatar_url: session.user.user_metadata.avatar_url || null,
           profile_completeness: 0,
+          updated_at: new Date().toISOString(),
         });
       }
-
+      
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
+
+  // Fallback to home page
   return NextResponse.redirect(`${origin}/`);
 }

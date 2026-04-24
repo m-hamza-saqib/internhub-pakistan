@@ -12,26 +12,43 @@ export default async function ProfilePage() {
 
   if (!user) redirect('/login');
 
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single();
 
-  if (!profile) redirect('/login');
+  if (!profile) {
+    // Attempt auto-creation
+    const { error } = await supabase.from('profiles').insert({
+      id: user.id,
+      email: user.email,
+      full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+      role: 'intern',
+      profile_completeness: 0
+    });
+
+    if (error) {
+      console.error('Manual profile creation error:', error);
+      redirect('/login');
+    }
+
+    // Redirect to self to fetch the new profile
+    redirect('/profile');
+  }
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-900">Manage Profile</h1>
-        <p className="text-sm font-bold text-gray-900">hello@ahwtechnologies.com</p>
-        <p className="text-gray-500 mt-2">
-          📧 Email: hello@ahwtechnologies.com
-          Keep your professional profile updated to increase your chances of selection.
+      <div className="mb-8 font-instrument-serif">
+        <h1 className="text-4xl text-gray-900 mb-2">Manage <span className="italic text-primary-600">Profile</span></h1>
+        <p className="text-gray-500 font-medium tracking-tight">
+          Keep your professional details accurate. High completeness scores improve your selection chances.
         </p>
       </div>
 
-      <ProfileForm initialData={profile} />
+      <div className="card p-8 border-none shadow-premium bg-white">
+        <ProfileForm initialData={profile} />
+      </div>
     </div>
   );
 }

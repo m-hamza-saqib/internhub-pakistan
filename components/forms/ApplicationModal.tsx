@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
@@ -18,6 +18,11 @@ interface Props {
 export default function ApplicationModal({ internshipId, internshipTitle, onClose }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const supabase = createClient();
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<ApplicationInput>({
     resolver: zodResolver(applicationSchema),

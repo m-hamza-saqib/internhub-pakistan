@@ -71,6 +71,15 @@ function useInternships(filters: Filters) {
 export default function InternshipsPage() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    if (mobileFiltersOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileFiltersOpen]);
   const [searchInput, setSearchInput] = useState('');
   const { data: internships = [], isLoading, error } = useInternships(filters);
 

@@ -183,19 +183,21 @@ export default function HomePage() {
       </section>
 
       {/* ── TRUST BAR ── */}
-      <section className="border-y border-gray-200 bg-gray-50 py-6 overflow-hidden">
-        <div className="flex items-center gap-3 mb-3 justify-center">
-          <div className="h-px flex-1 bg-gray-200 max-w-xs" />
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Trusted by students from</span>
-          <div className="h-px flex-1 bg-gray-200 max-w-xs" />
-        </div>
-        <div className="relative overflow-hidden">
-          <div className="animate-marquee flex gap-12 whitespace-nowrap">
-            {[...TRUSTED_UNIVERSITIES, ...TRUSTED_UNIVERSITIES].map((uni, i) => (
-              <span key={i} className="text-sm font-semibold text-gray-500 hover:text-primary-500 transition-colors cursor-default">
-                {uni}
-              </span>
-            ))}
+      <section className="border-y border-gray-200 bg-white py-8">
+        <div className="container">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] shrink-0 border-r border-gray-100 pr-6 hidden md:block">
+               Trusted By
+            </span>
+            <div className="w-full overflow-x-auto pb-4 no-scrollbar cursor-grab active:cursor-grabbing">
+              <div className="flex gap-12 whitespace-nowrap px-4 md:px-0 items-center justify-between min-w-max">
+                {TRUSTED_UNIVERSITIES.map((uni, i) => (
+                  <span key={i} className="text-sm font-bold text-gray-400 hover:text-primary-600 transition-colors">
+                    {uni}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
