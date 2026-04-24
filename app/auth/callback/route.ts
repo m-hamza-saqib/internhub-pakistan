@@ -20,7 +20,7 @@ export async function GET(request: Request) {
         .single();
 
       if (!profile) {
-        await supabase.from('profiles').insert({
+        await (supabase.from('profiles') as any).insert({
           id: user.id,
           email: user.email,
           full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',

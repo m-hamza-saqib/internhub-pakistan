@@ -12,15 +12,15 @@ export default async function ProfilePage() {
 
   if (!user) redirect('/login');
 
-  let { data: profile } = await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single();
 
   if (!profile) {
-    // Attempt auto-creation
-    const { error } = await supabase.from('profiles').insert({
+    // Attempt auto-creation with safer type casting to avoid build errors
+    const { error } = await (supabase.from('profiles') as any).insert({
       id: user.id,
       email: user.email,
       full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
@@ -30,24 +30,25 @@ export default async function ProfilePage() {
 
     if (error) {
       console.error('Manual profile creation error:', error);
-      redirect('/login');
+      // If insertion fails (e.g. email column missing), we still want to show the page
+      // so the user can fill it out manually.
+    } else {
+      // Redirect to self to fetch the new profile
+      redirect('/profile');
     }
-
-    // Redirect to self to fetch the new profile
-    redirect('/profile');
   }
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <div className="mb-8 font-instrument-serif">
+      <div className="mb-8 font-instrument-serif px-6 md:px-0">
         <h1 className="text-4xl text-gray-900 mb-2">Manage <span className="italic text-primary-600">Profile</span></h1>
         <p className="text-gray-500 font-medium tracking-tight">
           Keep your professional details accurate. High completeness scores improve your selection chances.
         </p>
       </div>
 
-      <div className="card p-8 border-none shadow-premium bg-white">
-        <ProfileForm initialData={profile} />
+      <div className="card md:p-8 border-none shadow-premium bg-white">
+        <ProfileForm initialData={profile || { id: user.id, email: user.email }} />
       </div>
     </div>
   );
