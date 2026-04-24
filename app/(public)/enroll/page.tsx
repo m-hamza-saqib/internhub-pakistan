@@ -36,17 +36,57 @@ const PAYMENT_ACCOUNTS = [
   },
 ];
 
-export default function EnrollPage() {
+import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+
+import { Suspense } from 'react';
+
+function EnrollContent() {
+  const searchParams = useSearchParams();
+  const supabase = createClient();
+  const internshipFromUrl = searchParams.get('internship') || '';
+
   const [step, setStep] = useState<'instructions' | 'proof' | 'submitted'>('instructions');
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     fullName: '',
     email: '',
     transactionId: '',
-    internship: '',
+    internship: internshipFromUrl,
     method: '',
   });
   const [screenshot, setScreenshot] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          const p = profile as any;
+          setForm(prev => ({
+            ...prev,
+            fullName: p.full_name || '',
+            email: p.email || user.email || '',
+          }));
+        }
+      }
+    };
+    fetchProfile();
+  }, [supabase]);
+
+  // Sync internship if URL changes
+  useEffect(() => {
+    if (internshipFromUrl) {
+      setForm(prev => ({ ...prev, internship: internshipFromUrl }));
+    }
+  }, [internshipFromUrl]);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -352,5 +392,17 @@ export default function EnrollPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function EnrollPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 text-primary-500 animate-spin" />
+      </div>
+    }>
+      <EnrollContent />
+    </Suspense>
   );
 }

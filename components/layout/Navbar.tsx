@@ -20,7 +20,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<{ full_name: string; avatar_url: string | null; role: string } | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -35,7 +35,7 @@ export default function Navbar() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('full_name, avatar_url, role')
+          .select('full_name, avatar_url, role, is_lifetime_member')
           .eq('id', user.id)
           .single();
         setProfile(data);
@@ -129,10 +129,12 @@ export default function Navbar() {
                           <p className="text-sm font-bold text-gray-900 truncate">{profile?.full_name || 'My Account'}</p>
                           <p className="text-[10px] font-medium text-gray-400 truncate uppercase tracking-widest">{profile?.role || 'Intern'}</p>
                         </div>
-                        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
-                          <LayoutDashboard className="h-4 w-4 text-primary-500" />
-                          Dashboard
-                        </Link>
+                        {(profile?.is_lifetime_member || profile?.role === 'admin') && (
+                          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
+                            <LayoutDashboard className="h-4 w-4 text-primary-500" />
+                            Dashboard
+                          </Link>
+                        )}
                         {profile?.role === 'admin' && (
                           <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
                             <Settings className="h-4 w-4 text-accent-500" />
@@ -197,10 +199,12 @@ export default function Navbar() {
               <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
                 {user ? (
                   <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 bg-gray-50">
-                      <LayoutDashboard className="h-5 w-5 text-primary-500" />
-                      Go to Dashboard
-                    </Link>
+                    {(profile?.is_lifetime_member || profile?.role === 'admin') && (
+                      <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 bg-gray-50">
+                        <LayoutDashboard className="h-5 w-5 text-primary-500" />
+                        Go to Dashboard
+                      </Link>
+                    )}
                     <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50">
                       <LogOut className="h-5 w-5" />
                       Sign Out

@@ -58,7 +58,7 @@ export async function proxy(request: NextRequest) {
 
     // 3. LOGIC FOR AUTH PAGES (Login/Register)
     if (user && isAuthRoute) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL('/', request.url));
     }
 
     if (!user && (isDashboardRoute || isAdminRoute)) {
@@ -75,14 +75,16 @@ export async function proxy(request: NextRequest) {
 
       // Admin logic
       if (isAdminRoute && profile?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        return NextResponse.redirect(new URL('/', request.url));
       }
 
-      // Enrollment Lock for Dashboard
-      if (isDashboardRoute && profile?.role !== 'admin' && !profile?.is_lifetime_member) {
-        if (pathname !== '/enroll') {
-          return NextResponse.redirect(new URL('/enroll', request.url));
-        }
+      // Enrollment Lock for High-Value Routes
+      // We only lock projects, certificates, and my-internship.
+      const protectedDashboardRoutes = ['/projects', '/certificates', '/my-internship'];
+      const isProtectedDashboardRoute = protectedDashboardRoutes.some(r => pathname.startsWith(r));
+
+      if (isProtectedDashboardRoute && profile?.role !== 'admin' && !profile?.is_lifetime_member) {
+        return NextResponse.redirect(new URL('/enroll', request.url));
       }
     }
   } catch (err: any) {

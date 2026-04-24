@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .update({ status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString() })
       .eq('id', proofId);
 
-    // 2. Set is_lifetime_member = true on the user's profile — grants permanent dashboard access
+    // 2. Set is_lifetime_member = true on the user's profile
     const { error: profileErr } = await (adminClient.from('profiles') as any)
       .update({ is_lifetime_member: true })
       .eq('id', proof.user_id);
@@ -49,12 +49,73 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: 'Failed to activate dashboard access.' }, { status: 500 });
     }
 
-    // 3. Send in-app notification to user
+    // 3. AUTO-ENROLLMENT: Find the latest pending application and approve it
+    const { data: latestAppRaw } = await adminClient
+      .from('applications')
+      .select('*, internship:internships(*)')
+      .eq('user_id', proof.user_id)
+      .eq('status', 'pending')
+      .order('applied_at', { ascending: false })
+      .limit(1)
+      .single();
+
+    if (latestAppRaw) {
+      const app = latestAppRaw as any;
+      const internship = app.internship;
+      
+      // Approve application
+      await (adminClient.from('applications') as any)
+        .update({ status: 'accepted', reviewed_at: new Date().toISOString(), reviewed_by: user.id })
+        .eq('id', app.id);
+
+      // Create enrollment
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(startDate.getDate() + (internship.duration_weeks * 7));
+
+      const { data: enrollment, error: enrollErr } = await (adminClient.from('enrollments') as any)
+        .insert({
+          user_id: proof.user_id,
+          application_id: app.id,
+          internship_id: internship.id,
+          start_date: startDate.toISOString().split('T')[0],
+          end_date: endDate.toISOString().split('T')[0],
+        })
+        .select()
+        .single();
+
+      if (enrollment && !enrollErr) {
+        // Create project submissions
+        const { data: projects } = await adminClient
+          .from('internship_projects')
+          .select('id')
+          .eq('internship_id', internship.id);
+
+        if (projects && projects.length > 0) {
+          await (adminClient.from('project_submissions') as any).insert(
+            projects.map((p: any) => ({
+              enrollment_id: enrollment.id,
+              project_id: p.id,
+              user_id: proof.user_id,
+              status: 'in_progress',
+              attempt_number: 1,
+            }))
+          );
+        }
+
+        // Update spots filled
+        await (adminClient.from('internships') as any)
+          .update({ spots_filled: (internship.spots_filled || 0) + 1 })
+          .eq('id', internship.id);
+      }
+    }
+
+    // 4. Send in-app notification to user
     await (adminClient.from('notifications') as any).insert({
       user_id: proof.user_id,
       type: 'payment_approved',
       title: '✅ Payment Approved — Welcome to AHWTECHNOLOGIES!',
-      body: 'Your PKR 300 community fee has been verified. Your dashboard is now unlocked for lifetime access. Go ahead and enroll in your internship!',
+      body: `Your PKR 300 community fee has been verified. Your dashboard and the "${(latestAppRaw as any)?.internship?.title || 'internship'}" enrollment are now active!`,
       link: '/dashboard',
       is_read: false,
     });

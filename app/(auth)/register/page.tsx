@@ -80,7 +80,7 @@ export default function RegisterPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="card p-10 md:p-12 shadow-premium relative overflow-hidden bg-white/90 backdrop-blur-xl border-white/50"
+        className="card p-6 sm:p-10 md:p-12 shadow-premium relative overflow-hidden bg-white/90 backdrop-blur-xl border-white/50"
       >
         <div className="relative z-10 flex flex-col items-center text-center mb-10">
           <Link href="/" className="mb-8 transition-transform hover:scale-105 active:scale-95">

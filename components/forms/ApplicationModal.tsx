@@ -41,8 +41,10 @@ export default function ApplicationModal({ internshipId, internshipTitle, onClos
         return;
       }
 
-      toast.success('Application submitted! We\'ll review it within 2–5 business days.');
-      onClose();
+      toast.success('Application submitted! Redirecting to enrollment fee page...');
+      setTimeout(() => {
+        window.location.href = `/enroll?internship=${encodeURIComponent(internshipTitle)}`;
+      }, 1500);
     } catch {
       toast.error('Something went wrong. Please try again.');
     } finally {
