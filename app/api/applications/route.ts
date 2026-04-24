@@ -103,8 +103,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 6. Insert application
-  const { data: application, error: insertError } = await supabase
-    .from('applications')
+  const { data: application, error: insertError } = await (supabase.from('applications') as any)
     .insert({
       user_id: user.id,
       internship_id,
@@ -122,7 +121,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 7. Create notification
-  await supabase.from('notifications').insert({
+  await (supabase.from('notifications') as any).insert({
     user_id: user.id,
     type: 'application_update',
     title: 'Application Submitted',

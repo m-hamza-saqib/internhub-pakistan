@@ -67,8 +67,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const { data, error } = await adminClient
-    .from('notifications')
+  const { data, error } = await (adminClient.from('notifications') as any)
     .select('*')
     .eq('type', 'announcement')
     .order('created_at', { ascending: false })

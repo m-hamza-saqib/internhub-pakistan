@@ -43,8 +43,7 @@ export async function PATCH(
   const projectTitle = (submission.internship_projects as any)?.title || 'Project';
 
   // 4. Update Submission
-  const { error: updateError } = await adminClient
-    .from('project_submissions')
+  const { error: updateError } = await (adminClient.from('project_submissions') as any)
     .update({
       status: newStatus,
       feedback,
@@ -57,7 +56,7 @@ export async function PATCH(
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
   // 5. Notify Intern
-  await adminClient.from('notifications').insert({
+  await (adminClient.from('notifications') as any).insert({
     user_id: submission.user_id,
     type: 'project_update',
     title: action === 'pass' ? 'Project Passed! 🎉' : 'Project Needs Work ✍️',

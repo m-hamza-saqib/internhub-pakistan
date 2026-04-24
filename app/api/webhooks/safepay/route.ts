@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     const supabase = await createAdminClient();
 
     // Update payment record
-    await supabase.from('payments').update({
+    await (supabase.from('payments') as any).update({
       status: 'completed',
       gateway_transaction_id: transactionToken,
       gateway_payload: event as unknown as Record<string, unknown>,
@@ -48,8 +48,7 @@ export async function POST(req: NextRequest) {
     }).eq('enrollment_id', enrollmentId).eq('status', 'pending');
 
     // Unlock certificate
-    const { data: enrollment } = await supabase
-      .from('enrollments')
+    const { data: enrollment } = await (supabase.from('enrollments') as any)
       .update({ certificate_unlocked: true, status: 'completed', completion_date: new Date().toISOString() })
       .eq('id', enrollmentId)
       .select('user_id, internship_id')
@@ -60,10 +59,10 @@ export async function POST(req: NextRequest) {
       const { count } = await supabase.from('enrollments').select('id', { count: 'exact', head: true }).not('certificate_id', 'is', null);
       const certId = `IH-${new Date().getFullYear()}-${String((count || 0) + 1).padStart(5, '0')}`;
 
-      await supabase.from('enrollments').update({ certificate_id: certId }).eq('id', enrollmentId);
+      await (supabase.from('enrollments') as any).update({ certificate_id: certId }).eq('id', enrollmentId);
 
       // Notify user
-      await supabase.from('notifications').insert({
+      await (supabase.from('notifications') as any).insert({
         user_id: enrollment.user_id,
         type: 'certificate',
         title: '🏆 Your Certificate is Ready!',

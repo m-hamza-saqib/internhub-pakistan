@@ -82,8 +82,7 @@ export default function NotificationsClient({ notifications: initial, userId }: 
   const unread = notifications.filter((n) => !n.is_read);
 
   const markAllRead = async () => {
-    const { error } = await supabase
-      .from('notifications')
+    const { error } = await (supabase.from('notifications') as any)
       .update({ is_read: true })
       .eq('user_id', userId)
       .eq('is_read', false);
@@ -94,7 +93,7 @@ export default function NotificationsClient({ notifications: initial, userId }: 
   };
 
   const markRead = async (id: string) => {
-    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
+    await (supabase.from('notifications') as any).update({ is_read: true }).eq('id', id);
     setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, is_read: true } : n));
   };
 
