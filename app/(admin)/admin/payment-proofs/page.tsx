@@ -16,10 +16,18 @@ export default function AdminPaymentProofsPage() {
   const supabase = createClient();
 
   const fetchProofs = async () => {
-    const { data } = await (supabase.from('payment_proofs') as any)
+    const { data, error } = await (supabase.from('payment_proofs') as any)
       .select('*, profiles!payment_proofs_user_id_fkey(full_name, email, username)')
       .order('created_at', { ascending: false });
-    setProofs(data || []);
+    
+    if (error) {
+       console.error('Payment Proof Error:', error);
+       // Try without join if it fails
+       const { data: simpleData } = await (supabase.from('payment_proofs') as any).select('*');
+       if (simpleData) setProofs(simpleData);
+    } else {
+       setProofs(data || []);
+    }
     setLoading(false);
   };
 
