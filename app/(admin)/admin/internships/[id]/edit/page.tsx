@@ -31,8 +31,8 @@ export default async function EditInternshipPage({ params }: Props) {
   if (!internshipRes.data) notFound();
 
   const initialData = {
-    ...internshipRes.data,
-    projects: projectsRes.data || [],
+    ...(internshipRes as any).data,
+    projects: (projectsRes as any).data || [],
   };
 
   return (
