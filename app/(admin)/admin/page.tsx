@@ -24,7 +24,7 @@ export default async function AdminDashboardPage() {
   const [
     usersRes, activeEnrollRes, pendingAppsRes, allAppsRes,
     certificatesRes, paymentsRes, recentAppsRes, submissionsRes,
-  ] = await Promise.all([
+  ] = (await Promise.all([
     adminClient.from('profiles').select('id', { count: 'exact', head: true }),
     adminClient.from('enrollments').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     adminClient.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -33,7 +33,7 @@ export default async function AdminDashboardPage() {
     adminClient.from('payments').select('amount, currency, status').eq('status', 'completed'),
     adminClient.from('applications').select('id, status, applied_at, profiles!applications_user_id_fkey(full_name, email), internships(title)').order('applied_at', { ascending: false }).limit(10),
     adminClient.from('project_submissions').select('id', { count: 'exact', head: true }).eq('status', 'under_review'),
-  ]);
+  ])) as any[];
 
   const totalRevenuePKR = (paymentsRes.data as any[] || []).filter(p => p.currency === 'PKR').reduce((sum, p) => sum + p.amount, 0);
   const totalRevenueUSD = (paymentsRes.data as any[] || []).filter(p => p.currency === 'USD').reduce((sum, p) => sum + p.amount, 0);

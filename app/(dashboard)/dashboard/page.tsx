@@ -13,19 +13,19 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const [profileRes, applicationsRes, enrollmentRes, notificationsRes, certificatesRes] = await Promise.all([
+  const [profileRes, applicationsRes, enrollmentRes, notificationsRes, certificatesRes] = (await Promise.all([
     supabase.from('profiles').select('full_name, profile_completeness, avatar_url').eq('id', user.id).single(),
     supabase.from('applications').select('id, status, applied_at, internships(title)').eq('user_id', user.id).order('applied_at', { ascending: false }).limit(5),
     supabase.from('enrollments').select('*, internships(title, duration_weeks, category), project_submissions(status)').eq('user_id', user.id).eq('status', 'active').maybeSingle(),
     supabase.from('notifications').select('id, title, body, type, is_read, created_at, link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
     supabase.from('enrollments').select('certificate_id, certificate_unlocked').eq('user_id', user.id).eq('status', 'completed').not('certificate_id', 'is', null),
-  ]);
+  ])) as any[];
 
-  const profile = profileRes.data as any;
-  const applications = (applicationsRes.data || []) as any[];
-  const enrollment = enrollmentRes.data as any;
-  const notifications = (notificationsRes.data || []) as any[];
-  const certificates = (certificatesRes.data || []) as any[];
+  const profile = profileRes.data;
+  const applications = applicationsRes.data || [];
+  const enrollment = enrollmentRes.data;
+  const notifications = notificationsRes.data || [];
+  const certificates = certificatesRes.data || [];
 
   const firstName = profile?.full_name?.split(' ')[0] || 'there';
 
@@ -206,7 +206,7 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-4">
-                {applications.map((app) => (
+                {applications.map((app: any) => (
                   <div key={app.id} className="group flex items-center gap-5 p-4 rounded-2xl border border-gray-50 hover:border-gray-100 hover:bg-gray-50/50 transition-all">
                     <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-white border border-gray-100 shadow-sm text-lg">📁</div>
                     <div className="flex-1 min-w-0">
@@ -241,7 +241,7 @@ export default async function DashboardPage() {
               <p className="text-sm text-gray-400 text-center py-12">All caught up!</p>
             ) : (
               <div className="space-y-3">
-                {notifications.map((n) => (
+                {notifications.map((n: any) => (
                   <Link
                     key={n.id}
                     href={n.link || '/notifications'}

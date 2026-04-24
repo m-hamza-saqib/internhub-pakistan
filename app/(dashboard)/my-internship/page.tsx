@@ -38,15 +38,15 @@ export default async function MyInternshipPage() {
     );
   }
 
-  const internship = enrollment.internships as unknown as {
+  const internship = (enrollment as any).internships as unknown as {
     title: string; category: string; duration_weeks: number;
     difficulty: string; description: string; what_you_learn: string;
   };
-  const submissions = enrollment.project_submissions as { status: string }[];
+  const submissions = (enrollment as any).project_submissions as { status: string }[];
   const passed = submissions.filter(s => s.status === 'passed').length;
   const total = totalProjectCount > 0 ? totalProjectCount : submissions.length;
   const progress = total > 0 ? Math.round((passed / total) * 100) : 0;
-  const daysLeft = calculateDaysLeft(enrollment.end_date);
+  const daysLeft = calculateDaysLeft((enrollment as any).end_date);
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -71,8 +71,8 @@ export default async function MyInternshipPage() {
         {/* Timeline */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-6">
           {[
-            { icon: Calendar, label: 'Start Date',  value: formatDate(enrollment.start_date) },
-            { icon: Calendar, label: 'End Date',    value: formatDate(enrollment.end_date) },
+            { icon: Calendar, label: 'Start Date',  value: formatDate((enrollment as any).start_date) },
+            { icon: Calendar, label: 'End Date',    value: formatDate((enrollment as any).end_date) },
             { icon: Clock,    label: 'Days Left',   value: `${daysLeft} days` },
             { icon: BookOpen, label: 'Duration',    value: `${internship.duration_weeks} Weeks` },
           ].map(({ icon: Icon, label, value }) => (

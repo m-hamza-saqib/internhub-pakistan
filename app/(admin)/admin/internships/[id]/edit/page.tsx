@@ -23,16 +23,16 @@ export default async function EditInternshipPage({ params }: Props) {
   if (!adminProfile || (adminProfile as any).role !== 'admin') redirect('/dashboard');
 
   // Fetch internship and its projects
-  const [internshipRes, projectsRes] = await Promise.all([
+  const [internshipRes, projectsRes] = (await Promise.all([
     supabase.from('internships').select('*').eq('id', id).single(),
     supabase.from('internship_projects').select('*').eq('internship_id', id).order('order_index', { ascending: true }),
-  ]);
+  ])) as any[];
 
-  if (!internshipRes.data) notFound();
+  if (!internshipRes?.data) notFound();
 
   const initialData = {
-    ...(internshipRes as any).data,
-    projects: (projectsRes as any).data || [],
+    ...internshipRes.data,
+    projects: projectsRes.data || [],
   };
 
   return (
