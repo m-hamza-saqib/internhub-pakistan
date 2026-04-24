@@ -91,6 +91,17 @@ export default function Navbar() {
                 )}
               </Link>
             ))}
+            {(profile?.is_lifetime_member || profile?.role === 'admin') && (
+              <Link
+                href="/dashboard"
+                className={`relative text-sm font-semibold transition-colors hover:text-primary-500 ${textColor} ${pathname === '/dashboard' ? 'text-primary-500' : ''}`}
+              >
+                Dashboard
+                {pathname === '/dashboard' && (
+                  <motion.div layoutId="nav-pill" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-500 rounded-full" />
+                )}
+              </Link>
+            )}
           </div>
 
           {/* Auth Section */}

@@ -79,8 +79,7 @@ export async function proxy(request: NextRequest) {
       }
 
       // Enrollment Lock for High-Value Routes
-      // We only lock projects, certificates, and my-internship.
-      const protectedDashboardRoutes = ['/projects', '/certificates', '/my-internship'];
+      const protectedDashboardRoutes = ['/dashboard', '/projects', '/certificates', '/my-internship'];
       const isProtectedDashboardRoute = protectedDashboardRoutes.some(r => pathname.startsWith(r));
 
       if (isProtectedDashboardRoute && profile?.role !== 'admin' && !profile?.is_lifetime_member) {
