@@ -83,12 +83,11 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
     let error;
     if (isNew) {
       // INSERT a brand-new submission row
-      const result = await supabase.from('project_submissions').insert(payload as any);
+      const result = await (supabase.from('project_submissions') as any).insert(payload as any);
       error = result.error;
     } else {
       // UPDATE the existing submission row by primary key
-      const result = await supabase
-        .from('project_submissions')
+      const result = await (supabase.from('project_submissions') as any)
         .update(payload as any)
         .eq('id', sub.id);
       error = result.error;

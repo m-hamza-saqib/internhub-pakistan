@@ -50,8 +50,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
     try {
       if (initialData?.id) {
         // 1. Update Internship
-        const { error: intError } = await supabase
-          .from('internships')
+        const { error: intError } = await (supabase.from('internships') as any)
           .update({
             title: data.title,
             slug,
@@ -69,8 +68,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
 
         // 2. Reconcile Projects (Delete old, Insert new for simplicity in this MVP)
         // In a production app, we'd do a more complex diffing/upserting
-        const { error: delError } = await supabase
-          .from('internship_projects')
+        const { error: delError } = await (supabase.from('internship_projects') as any)
           .delete()
           .eq('internship_id', initialData.id);
 
@@ -85,8 +83,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
           order_index: i,
         }));
 
-        const { error: projError } = await supabase
-          .from('internship_projects')
+        const { error: projError } = await (supabase.from('internship_projects') as any)
           .insert(projectsToInsert);
 
         if (projError) throw projError;
@@ -94,8 +91,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
         toast.success('Internship program updated successfully!');
       } else {
         // 1. Insert Internship
-        const { data: internship, error: intError } = await supabase
-          .from('internships')
+        const { data: internship, error: intError } = await (supabase.from('internships') as any)
           .insert({
             title: data.title,
             slug,
@@ -123,8 +119,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
           order_index: i,
         }));
 
-        const { error: projError } = await supabase
-          .from('internship_projects')
+        const { error: projError } = await (supabase.from('internship_projects') as any)
           .insert(projectsToInsert);
 
         if (projError) throw projError;
