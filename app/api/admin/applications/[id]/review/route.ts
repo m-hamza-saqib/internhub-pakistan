@@ -47,11 +47,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const profile = application.applicant;
 
   // Fetch current enrollment status to check capacity
-  const { data: currentInternship } = await adminClient
+  const { data: currentInternshipRaw } = await adminClient
     .from('internships')
     .select('spots_filled, spots_total')
     .eq('id', internship.id)
     .single();
+
+  const currentInternship = currentInternshipRaw as { spots_filled: number; spots_total: number } | null;
+
 
   if (action === 'accept') {
     if (currentInternship && currentInternship.spots_filled >= currentInternship.spots_total) {
@@ -131,10 +134,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       });
 
       // Increment spots_filled
-      await adminClient
-        .from('internships')
+      await (adminClient.from('internships') as any)
         .update({ spots_filled: (currentInternship?.spots_filled || 0) + 1 })
         .eq('id', internship.id);
+
 
       return NextResponse.json({ success: true, data: { enrollment_id: enrollment.id } });
     } catch (err: any) {

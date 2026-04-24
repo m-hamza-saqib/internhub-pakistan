@@ -14,8 +14,10 @@ export async function PATCH(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data: adminProfile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  const { data: adminProfileRaw } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+  const adminProfile = adminProfileRaw as { role: string } | null;
   if (!adminProfile || adminProfile.role !== 'admin') {
+
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
@@ -31,11 +33,14 @@ export async function PATCH(
   const { action, feedback } = parsed.data;
 
   // 3. Get Submission Details
-  const { data: submission } = await adminClient
+  const { data: submissionRaw } = await adminClient
     .from('project_submissions')
     .select('user_id, status, attempt_number, enrollment_id, project_id, internship_projects(title)')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
+
+  const submission = submissionRaw as any;
+
 
   if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 });
 
@@ -51,7 +56,8 @@ export async function PATCH(
       reviewed_by: user.id,
       // If failed, we don't automatically increment attempt here, user handles resubmit in form
     })
-    .eq('id', params.id);
+    .eq('id', id);
+
 
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 

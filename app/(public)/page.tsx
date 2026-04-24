@@ -7,7 +7,8 @@ import {
   ArrowRight, CheckCircle, Star, ChevronDown, Award,
   Users, TrendingUp, Globe, FileText, Briefcase, Shield, Sparkles,
 } from 'lucide-react';
-import { INTERNSHIP_CATEGORIES, FAQ_ITEMS, TRUSTED_UNIVERSITIES, TESTIMONIALS } from '@/lib/constants';
+import { INTERNSHIP_CATEGORIES, FAQ_ITEMS, TRUSTED_UNIVERSITIES, TESTIMONIALS, STEPS } from '@/lib/constants';
+
 import { cn } from '@/lib/utils';
 
 /* ─── Counter Animation Hook ─── */
@@ -78,22 +79,9 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
 
 /* ─── Main Page ─── */
 export default function HomePage() {
-  const STEPS = [
-    { num: '01', title: 'Create Account', desc: 'Register free, complete your profile with your education and skills.', icon: Users },
-    { num: '02', title: 'Apply',          desc: 'Browse internships and submit your motivation letter in minutes.', icon: FileText },
-    { num: '03', title: 'Complete Projects', desc: 'Get enrolled, receive real-world projects, and submit your work.', icon: Briefcase },
-    { num: '04', title: 'Get Certified', desc: 'Admin reviews your work. Pay PKR 300 and download your certificate.', icon: Award },
-  ];
-
-  const TESTIMONIALS = [
-    { name: 'Ayesha Raza',    role: 'Web Dev Intern',        city: 'Lahore',    uni: 'COMSATS',    rating: 5, text: 'InternHub gave me my first real industry experience. Got hired at a startup within a month of completing my internship!' },
-    { name: 'Zain ul Abideen', role: 'Data Science Intern',  city: 'Karachi',   uni: 'IBA',        rating: 5, text: 'The projects were challenging and realistic. The certificate is beautifully designed and verified publicly.' },
-    { name: 'Fatima Malik',   role: 'UI/UX Design Intern',    city: 'Islamabad', uni: 'NUST',       rating: 5, text: 'As a student, this was perfect. The feedback from admins was super helpful. 100% recommend!' },
-    { name: 'Ahmed Siddiqui', role: 'Digital Marketing Intern',city: 'Peshawar', uni: 'UET',        rating: 5, text: 'Easiest application process ever. Got my offer letter within 3 days and completed the internship remotely while studying.' },
-    { name: 'Sara Khan',      role: 'Content Writing Intern', city: 'Multan',    uni: 'BZU',        rating: 5, text: 'The platform is clean and user-friendly. My LinkedIn now shows a verified certificate which has gotten me many interviews.' },
-  ];
 
   return (
+
     <>
       {/* ── HERO ── */}
       <section className="gradient-hero relative min-h-screen flex items-center overflow-hidden">

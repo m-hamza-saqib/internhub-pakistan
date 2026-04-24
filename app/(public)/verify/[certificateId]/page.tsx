@@ -45,8 +45,11 @@ export default async function CertificateVerificationPage({ params }: Props) {
     );
   }
 
-  const profile = (enrollment as any).profiles as unknown as { full_name: string; university: string; city: string };
-  const internship = (enrollment as any).internships as unknown as { title: string; category: string; duration_weeks: number; difficulty: string };
+  // Casting to properly handle the joined data types
+  const data = enrollment as any;
+  const profile = data.profiles as { full_name: string; university: string; city: string };
+  const internship = data.internships as { title: string; category: string; duration_weeks: number; difficulty: string };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 relative overflow-hidden">
@@ -110,7 +113,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
                 </span>
                 <span className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
                   <Calendar className="h-3 w-3 text-primary-500" />
-                  Completed {enrollment.completion_date ? formatDate(enrollment.completion_date) : '—'}
+                  Completed {data.completion_date ? formatDate(data.completion_date) : '—'}
                 </span>
                 <span className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
                   <Award className="h-3 w-3 text-primary-500" />
@@ -122,7 +125,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
             {/* Verification Metadata Grid */}
             <div className="grid grid-cols-1 gap-4 text-left sm:grid-cols-2 mb-10">
               {[
-                { label: 'Blockchain ID',   value: enrollment.certificate_id, icon: CheckCircle },
+                { label: 'Blockchain ID',   value: data.certificate_id, icon: CheckCircle },
                 { label: 'Domain Core',     value: internship.category.replace(/-/g, ' '), icon: Award },
                 { label: 'Organization',    value: profile.university || 'Independent Track', icon: Globe },
                 { label: 'Auth Status',     value: 'Verified by InternHub', icon: Sparkles },
@@ -142,7 +145,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
             <div className="flex items-center justify-center gap-3 py-6 bg-primary-900 rounded-2xl text-white shadow-lg shadow-primary-900/10">
               <QrCode className="h-5 w-5 text-primary-400" />
               <div className="text-[10px] font-black uppercase tracking-[0.2em]">
-                Authenticity Key: <span className="text-primary-300">{enrollment.certificate_id}</span>
+                Authenticity Key: <span className="text-primary-300">{data.certificate_id}</span>
               </div>
             </div>
           </div>
