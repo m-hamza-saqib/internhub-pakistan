@@ -92,7 +92,7 @@ export default function RegisterPage() {
           <h1 className="font-instrument-serif text-4xl text-gray-900 tracking-tight">
             Create Your <span className="italic opacity-80">Pathway</span>
           </h1>
-          <p className="text-sm font-medium text-gray-500 mt-2">Join InternHub Pakistan and launch your remote career</p>
+          <p className="text-sm font-medium text-gray-500 mt-2">Join AHWTECHNOLOGIES and launch your remote career</p>
         </div>
 
         {/* Google OAuth */}

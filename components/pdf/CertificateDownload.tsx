@@ -14,9 +14,8 @@ interface Props {
 }
 
 export default function CertificateDownload({ internName, internshipTitle, completionDate, certificateId }: Props) {
-  // Generate a mock QR code URL for now (in production, use a QR generation service or data URL)
-  // Example: https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://internhub.pk/verify/ID
-  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`https://internhub.vercel.app/verify/${certificateId}`)}`;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${appUrl}/verify/${certificateId}`)}`;
 
   return (
     <PDFDownloadButton

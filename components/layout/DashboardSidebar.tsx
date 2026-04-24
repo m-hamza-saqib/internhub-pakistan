@@ -188,9 +188,9 @@ export default function DashboardSidebar({ open = true, onClose }: DashboardSide
               <Icon size={18} className={isActive ? "text-primary-600" : "text-gray-400 group-hover:text-gray-600"} />
               <span className="flex-1">{link.label}</span>
               
-              {'badge' in link && link.badge > 0 && (
+              {'badge' in link && (link.badge ?? 0) > 0 && (
                 <span className="flex h-5 min-w-5 px-1 items-center justify-center rounded-lg bg-rose-500 text-[10px] font-black text-white shadow-sm shadow-rose-200">
-                  {link.badge > 99 ? '99+' : link.badge}
+                  {link.badge! > 99 ? '99+' : link.badge}
                 </span>
               )}
             </Link>

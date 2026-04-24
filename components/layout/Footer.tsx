@@ -117,7 +117,7 @@ export default function Footer() {
                     </div>
                     <div>
                        <p className="text-[10px] font-bold text-gray-500 uppercase">Email Support</p>
-                       <p className="text-xs font-bold text-gray-200">hello@internhub.pk</p>
+                       <p className="text-xs font-bold text-gray-200">hello@ahwtechnologies.com</p>
                     </div>
                  </div>
               </div>
@@ -128,7 +128,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-10 sm:flex-row">
           <div className="flex flex-col sm:flex-row items-center gap-4 text-xs font-medium">
-            <p>© {new Date().getFullYear()} InternHub Pakistan.</p>
+            <p>© {new Date().getFullYear()} AHWTECHNOLOGIES.</p>
             <div className="hidden sm:block h-3 w-px bg-white/10" />
             <div className="flex items-center gap-4">
               {LEGAL_LINKS.map(link => (

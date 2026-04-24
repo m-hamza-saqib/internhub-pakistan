@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     supabase.from('applications').select('id, status, applied_at, internships(title)').eq('user_id', user.id).order('applied_at', { ascending: false }).limit(5),
     supabase.from('enrollments').select('*, internships(title, duration_weeks, category), project_submissions(status)').eq('user_id', user.id).eq('status', 'active').maybeSingle(),
     supabase.from('notifications').select('id, title, body, type, is_read, created_at, link').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
-    supabase.from('enrollments').select('certificate_id, certificate_unlocked').eq('user_id', user.id).eq('status', 'completed').not('certificate_id', 'is', null),
+    supabase.from('enrollments').select('certificate_id').eq('user_id', user.id).eq('status', 'completed').not('certificate_id', 'is', null),
   ])) as any[];
 
   const profile = profileRes.data;

@@ -92,7 +92,7 @@ export default function HomePage() {
           <div className="mx-auto max-w-4xl text-center">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-medium text-blue-200 mb-6">
-                🇵🇰 Pakistan's #1 Remote Internship Platform
+                🇵🇰 Pakistan&apos;s #1 Free Remote Internship Platform
               </span>
             </motion.div>
 
@@ -108,7 +108,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
               className="mt-8 text-lg md:text-xl text-blue-100/80 leading-relaxed max-w-2xl mx-auto font-medium"
             >
-              Apply for verified remote internships, complete real projects, and earn an internationally recognized certificate — all from your home in Pakistan.
+              100% free internships. Real projects. Verified certificates. Pay a one-time PKR 300 community fee — get <strong className="text-white">lifetime dashboard access</strong> and your certificate for free after completion.
             </motion.p>
 
             <motion.div
@@ -129,8 +129,24 @@ export default function HomePage() {
               className="mt-20 grid grid-cols-3 gap-8 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
             >
               <StatCounter value={500}  suffix="+" label="Interns Enrolled" />
-              <StatCounter value={10}   suffix="+" label="Internship Categories" />
+              <StatCounter value={10}   suffix="+" label="Internship Tracks" />
               <StatCounter value={95}   suffix="%" label="Completion Rate" />
+            </motion.div>
+
+            {/* Lifetime Access Value Prop Banner */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
+              className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm"
+            >
+              <span className="flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-emerald-300 font-semibold">
+                <CheckCircle className="h-4 w-4" /> Internship is 100% FREE
+              </span>
+              <span className="flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/20 px-4 py-2 text-amber-300 font-semibold">
+                💳 PKR 300 one-time community fee
+              </span>
+              <span className="flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-500/20 px-4 py-2 text-blue-300 font-semibold">
+                🔓 Lifetime dashboard access
+              </span>
             </motion.div>
           </div>
         </div>
@@ -403,27 +419,42 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
       <section className="gradient-hero section">
         <div className="container">
-          <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-3xl text-center">
             <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Start Your Career?
+              Ready to Launch Your Career?
             </h2>
-            <p className="text-lg text-blue-100 mb-8">
-              Join thousands of Pakistani students who launched their careers with InternHub. Free to start, only PKR 300 for your certificate.
+            <p className="text-lg text-blue-100 mb-2">
+              Join thousands of Pakistani students on <strong>AHWTECHNOLOGIES</strong>.
+            </p>
+            <p className="text-base text-blue-200/80 mb-8">
+              Internships are <strong className="text-white">100% free</strong>. Pay a one-time PKR 300 community fee and get <strong className="text-white">lifetime dashboard access</strong> — your certificate is issued free after completing your projects.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/register" className="btn-primary px-8 py-3.5 text-base">
                 Register Free <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link href="/internships" className="inline-flex items-center gap-2 rounded-lg border  border-white/30 px-8 py-3.5 text-base font-semibold text-white hover:bg-white/10 transition-colors">
+              <Link href="/internships" className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-8 py-3.5 text-base font-semibold text-white hover:bg-white/10 transition-colors">
                 Browse Internships
               </Link>
             </div>
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { icon: '🎓', label: 'Internship FREE', sub: 'No tuition, no hidden fees' },
+                { icon: '💳', label: 'PKR 300 once', sub: 'Community fee, covers everything' },
+                { icon: '♾️', label: 'Forever Access', sub: 'Dashboard never expires' },
+              ].map((item) => (
+                <div key={item.label} className="rounded-2xl bg-white/5 border border-white/10 p-4 text-center">
+                  <div className="text-2xl mb-1">{item.icon}</div>
+                  <div className="text-sm font-bold text-white">{item.label}</div>
+                  <div className="text-xs text-blue-300 mt-0.5">{item.sub}</div>
+                </div>
+              ))}
+            </div>
             <p className="mt-6 text-xs text-blue-200 flex items-center justify-center gap-2">
               <Shield className="h-4 w-4" />
-              No hidden fees. Certificate only costs PKR 300 after completion.
+              Transparent pricing. No surprises. Ever.
             </p>
           </div>
         </div>

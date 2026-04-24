@@ -58,8 +58,7 @@ export default function ProfileForm({ initialData }: { initialData: any }) {
     setLoading(true);
     const newCompleteness = calculateCompleteness(data);
     
-    const { error } = await supabase
-      .from('profiles')
+    const { error } = await (supabase.from('profiles') as any)
       .update({
         ...data,
         current_semester: data.current_semester ? parseInt(data.current_semester) : null,

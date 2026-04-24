@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { certificateId } = await params;
   return {
     title: `Certificate Verification — ${certificateId}`,
-    description: 'Verify the authenticity of an InternHub Pakistan certificate.',
+    description: 'Verify the authenticity of an AHWTECHNOLOGIES certificate.',
     robots: { index: true, follow: true },
   };
 }
@@ -39,7 +39,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
           <p className="text-gray-500 text-sm">
             The certificate ID <strong>{certificateId}</strong> is not valid or does not exist in our system.
           </p>
-          <a href="/" className="btn-primary mt-6 inline-flex">Go to InternHub</a>
+          <Link href="/" className="btn-primary mt-6 inline-flex">Go to AHWTECHNOLOGIES</Link>
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
                  <span className="text-sm font-black text-white italic">IH</span>
                </div>
                <div className="text-center">
-                 <div className="font-black text-gray-900 text-xl tracking-tight uppercase">InternHub Pakistan</div>
+                 <div className="font-black text-gray-900 text-xl tracking-tight uppercase">AHWTECHNOLOGIES</div>
                  <div className="text-[10px] font-black text-primary-500 uppercase tracking-[0.3em]">Official Verification Portal</div>
                </div>
             </div>
@@ -128,7 +128,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
                 { label: 'Blockchain ID',   value: data.certificate_id, icon: CheckCircle },
                 { label: 'Domain Core',     value: internship.category.replace(/-/g, ' '), icon: Award },
                 { label: 'Organization',    value: profile.university || 'Independent Track', icon: Globe },
-                { label: 'Auth Status',     value: 'Verified by InternHub', icon: Sparkles },
+                { label: 'Auth Status',     value: 'Verified by AHWTECH', icon: Sparkles },
               ].map((row) => (
                 <div key={row.label} className="rounded-2xl border border-gray-50 bg-gray-50/30 p-5 flex items-start gap-4 transition-colors hover:border-primary-100">
                   <div className="h-8 w-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-primary-500 shrink-0">
@@ -153,7 +153,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
 
         <div className="text-center space-y-4">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-relaxed max-w-md mx-auto">
-            This digital record is protected by InternHub's distributed verification protocol. 
+            This digital record is protected by AHWTECHNOLOGIES verification protocol. 
             Unauthorized duplication or tampering is strictly prohibited.
           </p>
           <div className="h-8 w-px bg-gray-200 mx-auto" />

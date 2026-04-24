@@ -1,9 +1,9 @@
 import { Users, FileText, Briefcase, Award } from 'lucide-react';
-export const APP_NAME = 'InternHub Pakistan';
+export const APP_NAME = 'AHWTECHNOLOGIES';
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 export const APP_DESCRIPTION =
-  'Pakistan\'s premier remote internship platform. Apply, learn, and get certified — all from home.';
+  'Pakistan\'s premier remote internship platform by AHWTECHNOLOGIES. Apply, learn, and grow your career — all from home.';
 
 export const INTERNSHIP_CATEGORIES = [
   { id: 'software-development', label: 'Software Development', icon: '💻', color: 'bg-blue-100 text-blue-700' },
@@ -82,8 +82,12 @@ export const TRUSTED_UNIVERSITIES = [
 
 export const FAQ_ITEMS = [
   {
-    q: 'Is this a paid internship?',
-    a: 'The internship itself is free. You only pay PKR 300 (or $3 internationally) after completing the internship to unlock and download your certificate.',
+    q: 'Is this a free internship?',
+    a: 'Yes, our internships are 100% free with no tuition or hidden charges. We only charge a one-time PKR 300 community fee to maintain the platform and offer verified certificates.',
+  },
+  {
+    q: 'Is there a separate fee for certificates?',
+    a: 'No. The PKR 300 community fee is the only payment you will ever make. It covers your enrollment, full dashboard access for life, and your verified certificate upon completion.',
   },
   {
     q: 'Can I do multiple internships at once?',
@@ -99,7 +103,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: 'How do I pay using JazzCash or EasyPaisa?',
-    a: 'When you complete your internship, click "Pay to Unlock Certificate" and choose JazzCash or EasyPaisa on the Safepay checkout page.',
+    a: 'When you apply, you will be shown payment instructions for EasyPaisa, JazzCash, and Bank Transfer. Simply pay PKR 300 and upload the proof (screenshot).',
   },
   {
     q: 'What happens if my application is rejected?',
@@ -107,7 +111,7 @@ export const FAQ_ITEMS = [
   },
   {
     q: 'How long does application review take?',
-    a: 'Our admin team reviews applications within 2–5 business days.',
+    a: 'Our admin team reviews applications and payment proofs within 2–5 business days.',
   },
   {
     q: 'Can I do this internship while studying?',
@@ -124,7 +128,7 @@ export const FAQ_ITEMS = [
 ];
 
 export const TESTIMONIALS = [
-  { name: 'Ayesha Raza',    role: 'Web Dev Intern',        city: 'Lahore',    uni: 'COMSATS',    rating: 5, text: 'InternHub gave me my first real industry experience. Got hired at a startup within a month of completing my internship!' },
+  { name: 'Ayesha Raza',    role: 'Web Dev Intern',        city: 'Lahore',    uni: 'COMSATS',    rating: 5, text: 'AHWTECHNOLOGIES gave me my first real industry experience. Got hired at a startup within a month of completing my internship!' },
   { name: 'Zain ul Abideen', role: 'Data Science Intern',  city: 'Karachi',   uni: 'IBA',        rating: 5, text: 'The projects were challenging and realistic. The certificate is beautifully designed and verified publicly.' },
   { name: 'Fatima Malik',   role: 'UI/UX Design Intern',    city: 'Islamabad', uni: 'NUST',       rating: 5, text: 'As a student, this was perfect. The feedback from admins was super helpful. 100% recommend!' },
   { name: 'Ahmed Siddiqui', role: 'Digital Marketing Intern',city: 'Peshawar', uni: 'UET',        rating: 5, text: 'Easiest application process ever. Got my offer letter within 3 days and completed the internship remotely while studying.' },
@@ -133,8 +137,8 @@ export const TESTIMONIALS = [
 
 export const STEPS = [
   { num: '01', title: 'Create Account', desc: 'Register free, complete your profile with your education and skills.', icon: Users },
-  { num: '02', title: 'Apply',          desc: 'Browse internships and submit your motivation letter in minutes.', icon: FileText },
-  { num: '03', title: 'Complete Projects', desc: 'Get enrolled, receive real-world projects, and submit your work.', icon: Briefcase },
-  { num: '04', title: 'Get Certified', desc: 'Admin reviews your work. Pay PKR 300 and download your certificate.', icon: Award },
+  { num: '02', title: 'Apply & Pay', desc: 'Choose an internship and pay a one-time PKR 300 community fee.', icon: FileText },
+  { num: '03', title: 'Complete Projects', desc: 'Get lifetime access, receive real-world projects, and submit weekly.', icon: Briefcase },
+  { num: '04', title: 'Get Certified', desc: 'Once all projects are approved, download your verified certificate for free.', icon: Award },
 ];
 

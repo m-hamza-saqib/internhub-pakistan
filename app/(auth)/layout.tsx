@@ -7,10 +7,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <header className="border-b border-gray-200 bg-white px-6 py-4">
         <Link href="/" className="flex items-center gap-2 w-fit">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-500">
-            <span className="text-sm font-bold text-white">IH</span>
+            <span className="text-sm font-bold text-white">AHW</span>
           </div>
           <span className="text-lg font-bold text-gray-900">
-            InternHub <span className="text-accent-500">Pakistan</span>
+            AHWTECHNOLOGIES
           </span>
         </Link>
       </header>
@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       <footer className="text-center text-xs text-gray-400 py-4">
-        © {new Date().getFullYear()} InternHub Pakistan. All rights reserved.
+        © {new Date().getFullYear()} AHWTECHNOLOGIES. All rights reserved.
       </footer>
     </div>
   );

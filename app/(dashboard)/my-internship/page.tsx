@@ -125,8 +125,8 @@ export default async function MyInternshipPage() {
       <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
         <p className="text-sm font-semibold text-gray-700 mb-1">Need Help?</p>
         <p className="text-xs text-gray-500 mb-3">Our program managers are here to support you.</p>
-        <a href="mailto:support@internhub.pk" className="text-xs font-semibold text-primary-500 hover:underline">
-          📧 support@internhub.pk
+        <a href="mailto:support@ahwtechnologies.com" className="text-xs font-semibold text-primary-500 hover:underline">
+          📧 support@ahwtechnologies.com
         </a>
       </div>
     </div>

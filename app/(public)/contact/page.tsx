@@ -58,7 +58,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">General Inquiries</p>
-                    <p className="text-sm font-bold text-gray-900">hello@internhub.pk</p>
+                    <p className="text-sm font-bold text-gray-900">hello@ahwtechnologies.com</p>
                   </div>
                 </div>
 

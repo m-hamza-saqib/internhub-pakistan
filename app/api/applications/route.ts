@@ -62,20 +62,24 @@ export async function POST(req: NextRequest) {
     .from('enrollments')
     .select('id')
     .eq('user_id', user.id)
-    .eq('status', 'active')
+    .eq('is_completed', false)
     .maybeSingle();
+
 
   if (activeEnrollment) {
     return NextResponse.json({ success: false, error: { code: 'ACTIVE_ENROLLMENT_EXISTS', message: 'You already have an active internship. Complete it first before applying to another.' } }, { status: 400 });
   }
 
   // 3. Check for duplicate application
-  const { data: existing } = await supabase
+  const { data: existingRaw } = await supabase
     .from('applications')
     .select('id, status, reviewed_at')
     .eq('user_id', user.id)
     .eq('internship_id', internship_id)
     .maybeSingle();
+
+  const existing = existingRaw as any;
+
 
   if (existing) {
     if (existing.status !== 'rejected') {
@@ -91,11 +95,14 @@ export async function POST(req: NextRequest) {
   }
 
   // 5. Verify internship exists and is published
-  const { data: internship } = await supabase
+  const { data: internshipRaw } = await supabase
     .from('internships')
     .select('id, spots_total, spots_filled, is_published')
     .eq('id', internship_id)
     .single();
+
+  const internship = internshipRaw as any;
+
 
   if (!internship || !internship.is_published) {
     return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Internship not found or not available.' } }, { status: 404 });

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       if (!profile) {
         const emailBase = session.user.email?.split('@')[0] || 'user';
         const username = `${emailBase}_${Math.random().toString(36).slice(2, 7)}`;
-        await supabase.from('profiles').insert({
+        await (supabase.from('profiles') as any).insert({
           id: session.user.id,
           username,
           full_name: session.user.user_metadata.full_name || emailBase || 'User',

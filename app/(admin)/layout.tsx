@@ -14,13 +14,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!profile || profile.role !== 'admin') redirect('/dashboard');
 
   const ADMIN_NAV = [
-    { href: '/admin',                label: 'Overview' },
-    { href: '/admin/applications',   label: 'Applications' },
-    { href: '/admin/internships',    label: 'Internships' },
-    { href: '/admin/users',          label: 'Users' },
-    { href: '/admin/projects',       label: 'Projects' },
-    { href: '/admin/payments',       label: 'Payments' },
-    { href: '/admin/announcements',  label: 'Announcements' },
+    { href: '/admin',                    label: 'Overview' },
+    { href: '/admin/applications',       label: 'Applications' },
+    { href: '/admin/payment-proofs',     label: 'Payment Proofs' },
+    { href: '/admin/internships',        label: 'Internships' },
+    { href: '/admin/users',              label: 'Users' },
+    { href: '/admin/projects',           label: 'Projects' },
+    { href: '/admin/payments',           label: 'Ledger' },
+    { href: '/admin/announcements',      label: 'Announcements' },
   ];
 
   return (

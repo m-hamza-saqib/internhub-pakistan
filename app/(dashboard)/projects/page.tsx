@@ -11,7 +11,7 @@ export default async function ProjectsPage() {
 
   const { data: enrollmentRaw } = await supabase
     .from('enrollments')
-    .select('id, internship_id, end_date, internships(title)')
+    .select('id, internship_id, start_date, end_date, internships(title)')
     .eq('user_id', user.id)
     .eq('status', 'active')
     .maybeSingle();
@@ -66,7 +66,7 @@ export default async function ProjectsPage() {
 
   return (
     <ProjectsClient
-      enrollment={enrollment as unknown as { id: string; internship_id: string; end_date: string; internships: { title: string } }}
+      enrollment={enrollment as unknown as { id: string; internship_id: string; start_date: string; end_date: string; internships: { title: string } }}
       submissions={mappedSubmissions as unknown as ProjectSubmission[]}
       totalProjects={allProjects?.length || 0}
     />

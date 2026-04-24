@@ -118,7 +118,7 @@ export const CertificateTemplate = ({
       <View style={styles.border} />
       
       <View style={styles.content}>
-        <Text style={styles.logo}>InternHub Pakistan</Text>
+        <Text style={styles.logo}>AHWTECHNOLOGIES</Text>
         
         <Text style={styles.header}>Certificate of Completion</Text>
         <Text style={styles.subHeader}>PROUDLY PRESENTED TO</Text>
@@ -150,7 +150,7 @@ export const CertificateTemplate = ({
           </View>
 
           <View style={styles.signatureBox}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>InternHub Pakistan</Text>
+            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>AHWTECHNOLOGIES</Text>
             <View style={styles.signatureLine}>
               <Text style={{ fontSize: 8 }}>Official Seal</Text>
             </View>

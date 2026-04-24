@@ -71,7 +71,7 @@ export default function LoginPage() {
           <h1 className="font-instrument-serif text-4xl text-gray-900 tracking-tight">
             Welcome <span className="italic opacity-80">Back</span>
           </h1>
-          <p className="text-sm font-medium text-gray-500 mt-2">Resume your journey at InternHub Pakistan</p>
+          <p className="text-sm font-medium text-gray-500 mt-2">Resume your journey at AHWTECHNOLOGIES</p>
         </div>
 
         {/* Google OAuth */}

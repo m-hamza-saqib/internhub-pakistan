@@ -6,7 +6,7 @@ import { Download, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
-  document: React.ReactElement;
+  document: any;
   fileName: string;
   label: string;
   className?: string;

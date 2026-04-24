@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'FAQ — Frequently Asked Questions',
-  description: 'Got questions about InternHub Pakistan? Find answers about the application process, payment, certificates, and more.',
+  description: 'Got questions about AHWTECHNOLOGIES? Find answers about the application process, payment, certificates, and more.',
 };
 
 export default function FAQPage() {
@@ -22,7 +22,7 @@ export default function FAQPage() {
             Frequently <span className="italic opacity-80">Asked</span>
           </h1>
           <p className="text-blue-100/80 text-lg font-medium leading-relaxed max-w-2xl mx-auto">
-            Everything you need to know about InternHub Pakistan. 
+            Everything you need to know about AHWTECHNOLOGIES. 
             Can't find your answer? <a href="/contact" className="text-white underline underline-offset-4 decoration-primary-400 hover:text-primary-300 transition-colors">Contact us</a>.
           </p>
         </div>
@@ -40,8 +40,8 @@ export default function FAQPage() {
             <h2 className="text-2xl font-black mb-3 tracking-tight">Still have questions?</h2>
             <p className="text-blue-100/70 text-sm mb-10 font-medium max-w-md mx-auto">Our dedicated support team is available Monday–Friday, 9am–6pm PKT to assist you with any inquiries.</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-              <a href="mailto:support@internhub.pk" className="inline-flex items-center gap-3 rounded-2xl border border-white/20 bg-white/5 px-8 py-4 text-sm font-bold hover:bg-white/10 transition-all active:scale-95 backdrop-blur-sm">
-                📧 Email: support@internhub.pk
+              <a href="mailto:hello@ahwtechnologies.com" className="inline-flex items-center gap-3 rounded-2xl border border-white/20 bg-white/5 px-8 py-4 text-sm font-bold hover:bg-white/10 transition-all active:scale-95 backdrop-blur-sm">
+                📧 Email: hello@ahwtechnologies.com
               </a>
               <a href="https://wa.me/923000000000" className="inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-sm font-bold text-primary-900 hover:bg-blue-50 transition-all active:scale-95 shadow-xl">
                 💬 Message on WhatsApp

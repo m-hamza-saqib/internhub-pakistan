@@ -21,16 +21,16 @@ export default function Logo({ className = '', variant = 'dark' }: LogoProps) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <span className="relative z-10 text-xl tracking-tighter italic">IH</span>
+        <span className="relative z-10 text-xl tracking-tighter italic">AHW</span>
         <div className="absolute inset-0 bg-white/5 opacity-50" />
       </motion.div>
       
       <div className="flex flex-col leading-none">
         <span className={`font-instrument-serif text-2xl tracking-tight ${isDark ? 'text-gray-900' : 'text-white'}`}>
-          InternHub
+          AHW
         </span>
         <span className={`text-[9px] font-black uppercase tracking-[0.4em] ${isDark ? 'text-primary-500' : 'text-primary-300/80'} -mt-0.5`}>
-          Pakistan
+          TECHNOLOGIES
         </span>
       </div>
     </div>

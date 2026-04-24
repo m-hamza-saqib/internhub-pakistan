@@ -134,7 +134,7 @@ export const profileSchema = z.object({
   university: z.string().min(2).optional().or(z.literal('')),
   degree_title: z.string().optional().or(z.literal('')),
   current_semester: z.string().optional().or(z.literal('')),
-  skills: z.array(z.string()).default([]),
+  skills: z.array(z.string()).catch([]),
   bio: z.string().max(500).optional().or(z.literal('')),
   github_url: z.string().url().optional().or(z.literal('')),
   linkedin_url: z.string().url().optional().or(z.literal('')),
@@ -145,4 +145,16 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type ApplicationInput = z.infer<typeof applicationSchema>;
 export type ProjectSubmissionInput = z.infer<typeof projectSubmissionSchema>;
 export type InternshipInput = z.infer<typeof internshipSchema>;
-export type ProfileInput = z.infer<typeof profileSchema>;
+export type ProfileInput = {
+  full_name: string;
+  phone?: string;
+  cnic?: string;
+  city?: string;
+  university?: string;
+  degree_title?: string;
+  current_semester?: string;
+  skills: string[];
+  bio?: string;
+  github_url?: string;
+  linkedin_url?: string;
+};

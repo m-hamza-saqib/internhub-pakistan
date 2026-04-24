@@ -20,12 +20,13 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: 'InternHub Pakistan — Remote Internships with Verified Certificates',
-    template: '%s | InternHub Pakistan',
+    default: 'AHWTECHNOLOGIES — Remote Internships with Verified Certificates',
+    template: '%s | AHWTECHNOLOGIES',
   },
   description:
-    "Pakistan's premier remote internship platform. Apply for verified internships, complete real projects, and earn internationally recognized certificates. PKR 300 only.",
+    "Pakistan's premier remote internship platform by AHWTECHNOLOGIES. Apply for verified internships, complete real projects, and earn internationally recognized certificates. PKR 300 only.",
   keywords: [
+    'AHWTECHNOLOGIES',
     'online internship Pakistan',
     'remote internship with certificate Pakistan',
     'free internship certificate online',
@@ -33,20 +34,20 @@ export const metadata: Metadata = {
     'digital marketing internship Pakistan',
     'internship Lahore Karachi Islamabad',
   ],
-  authors: [{ name: 'InternHub Pakistan' }],
-  creator: 'InternHub Pakistan',
+  authors: [{ name: 'AHWTECHNOLOGIES' }],
+  creator: 'AHWTECHNOLOGIES',
   openGraph: {
     type: 'website',
     locale: 'en_PK',
     url: process.env.NEXT_PUBLIC_APP_URL,
-    siteName: 'InternHub Pakistan',
-    title: 'InternHub Pakistan — Remote Internships with Verified Certificates',
+    siteName: 'AHWTECHNOLOGIES',
+    title: 'AHWTECHNOLOGIES — Remote Internships with Verified Certificates',
     description:
       "Pakistan's premier remote internship platform. Get certified. Get hired.",
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'InternHub Pakistan',
+    title: 'AHWTECHNOLOGIES',
     description: "Pakistan's premier remote internship platform.",
   },
   robots: {
@@ -58,7 +59,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${instrumentSerif.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-white font-sans antialiased">
         <Providers>
           {children}

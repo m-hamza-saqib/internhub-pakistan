@@ -22,9 +22,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
           <div className="flex items-center gap-2">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary-500">
-              <span className="text-xs font-bold text-white">IH</span>
+              <span className="text-xs font-bold text-white">AHW</span>
             </div>
-            <span className="text-sm font-bold text-gray-900">InternHub</span>
+            <span className="text-sm font-bold text-gray-900">AHWTECHNOLOGIES</span>
           </div>
         </div>
         <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>

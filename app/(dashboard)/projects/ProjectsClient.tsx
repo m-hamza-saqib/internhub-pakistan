@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle, Clock, AlertCircle, Send, Loader2, ChevronDown, X, Code } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Send, Loader2, ChevronDown, X, Code, Lock, Calendar } from 'lucide-react';
 import { projectSubmissionSchema, type ProjectSubmissionInput } from '@/lib/validations/schemas';
 import { PROJECT_STATUS_LABELS } from '@/lib/constants';
 import { cn, formatDate, calculateDaysLeft } from '@/lib/utils';
@@ -31,9 +31,30 @@ interface ProjectSubmission {
 }
 
 interface Props {
-  enrollment: { id: string; internship_id: string; end_date: string; internships: { title: string } };
+  enrollment: { id: string; internship_id: string; start_date: string; end_date: string; internships: { title: string } };
   submissions: ProjectSubmission[];
   totalProjects: number;
+}
+
+/**
+ * Returns true if the project's week has been reached since enrollment start.
+ * Week 1 unlocks immediately. Week 2 unlocks after 7 days, etc.
+ */
+function isWeekUnlocked(startDateStr: string, weekNumber: number): boolean {
+  const startDate = new Date(startDateStr);
+  const unlockDate = new Date(startDate);
+  unlockDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
+  return new Date() >= unlockDate;
+}
+
+/**
+ * Returns the date when a week unlocks.
+ */
+function getWeekUnlockDate(startDateStr: string, weekNumber: number): Date {
+  const startDate = new Date(startDateStr);
+  const unlockDate = new Date(startDate);
+  unlockDate.setDate(startDate.getDate() + (weekNumber - 1) * 7);
+  return unlockDate;
 }
 
 export default function ProjectsClient({ enrollment, submissions, totalProjects }: Props) {
@@ -50,23 +71,54 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
   const total = totalProjects || submissions.length;
   const progress = total > 0 ? Math.round((passed / total) * 100) : 0;
 
+  /**
+   * Determines if a project at index `i` is accessible.
+   * Rules:
+   *  1. Time gate: current date >= enrollmentStart + (week_number - 1) * 7 days
+   *  2. Sequential gate: previous project (index i-1) must have status === 'passed'
+   */
+  const isProjectAccessible = (sub: ProjectSubmission, index: number): boolean => {
+    const project = sub.internship_projects;
+
+    // Time gate
+    if (!isWeekUnlocked(enrollment.start_date, project.week_number)) return false;
+
+    // Sequential gate — first project has no predecessor
+    if (index === 0) return true;
+
+    const prevSub = submissions[index - 1];
+    return prevSub?.status === 'passed';
+  };
+
+  const getLockReason = (sub: ProjectSubmission, index: number): string => {
+    const project = sub.internship_projects;
+
+    if (!isWeekUnlocked(enrollment.start_date, project.week_number)) {
+      const unlockDate = getWeekUnlockDate(enrollment.start_date, project.week_number);
+      return `Unlocks on ${unlockDate.toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' })} (Week ${project.week_number})`;
+    }
+
+    if (index > 0 && submissions[index - 1]?.status !== 'passed') {
+      return 'Complete & pass the previous project first';
+    }
+
+    return 'Locked';
+  };
+
   const handleSubmitProject = async (sub: ProjectSubmission, data: ProjectSubmissionInput) => {
-    // isNew if the sub.id is the same as sub.project_id (fallback, no real DB row)
     const isNew = sub.id === sub.project_id;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { toast.error('You must be logged in to submit.'); return; }
 
-    // Store github_url in file_urls so we don't need a schema change
     const fileUrls = [...(sub.file_urls || [])];
     const githubUrl = data.github_url;
-    // Replace any existing github URL or append
     const filteredUrls = fileUrls.filter(u => !u.includes('github.com'));
-    filteredUrls.unshift(githubUrl); // github link first
+    filteredUrls.unshift(githubUrl);
 
     const payload: any = {
       submission_text: data.submission_text,
-      status: 'pending',          // Based on SQL constraint: allowed values are 'pending', 'passed', 'failed'
+      status: 'pending',
       submitted_at: new Date().toISOString(),
       project_id: sub.project_id,
       enrollment_id: enrollment.id,
@@ -75,39 +127,36 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
       file_urls: filteredUrls,
     };
 
-    // Only include ID if updating an existing row
-    if (!isNew) {
-      payload.id = sub.id;
-    }
+    if (!isNew) payload.id = sub.id;
 
     let error;
     if (isNew) {
-      // INSERT a brand-new submission row
       const result = await (supabase.from('project_submissions') as any).insert(payload as any);
       error = result.error;
     } else {
-      // UPDATE the existing submission row by primary key
       const result = await (supabase.from('project_submissions') as any)
         .update(payload as any)
         .eq('id', sub.id);
       error = result.error;
     }
 
-    if (error) { 
+    if (error) {
       console.error('Submission error:', error);
-      toast.error(`Failed to submit: ${error.message}`); 
-      return; 
+      toast.error(`Failed to submit: ${error.message}`);
+      return;
     }
-    toast.success('Project submitted successfully! The admin will review it shortly.');
+    toast.success('Project submitted! Admin will review it shortly.');
     setActiveSubmit(null);
     reset();
     window.location.reload();
   };
 
-  const statusIcon = (status: string) => {
+  const statusIcon = (status: string, locked: boolean) => {
+    if (locked) return <Lock className="h-5 w-5 text-gray-300" />;
     if (status === 'passed') return <CheckCircle className="h-5 w-5 text-green-500" />;
     if (status === 'failed') return <AlertCircle className="h-5 w-5 text-red-500" />;
-    if (status === 'submitted' || status === 'under_review') return <Clock className="h-5 w-5 text-blue-500" />;
+    if (status === 'pending' || status === 'submitted' || status === 'under_review')
+      return <Clock className="h-5 w-5 text-blue-500" />;
     return <div className="h-5 w-5 rounded-full border-2 border-gray-300" />;
   };
 
@@ -133,25 +182,48 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
         </div>
       </div>
 
+      {/* Lock Legend */}
+      <div className="flex flex-wrap gap-3 text-xs">
+        <span className="flex items-center gap-1.5 text-gray-500"><Lock className="h-3.5 w-3.5 text-gray-300" /> Locked</span>
+        <span className="flex items-center gap-1.5 text-gray-500"><div className="h-3.5 w-3.5 rounded-full border-2 border-gray-300" /> Available</span>
+        <span className="flex items-center gap-1.5 text-gray-500"><Clock className="h-3.5 w-3.5 text-blue-500" /> Submitted — Pending Review</span>
+        <span className="flex items-center gap-1.5 text-gray-500"><CheckCircle className="h-3.5 w-3.5 text-green-500" /> Approved</span>
+        <span className="flex items-center gap-1.5 text-gray-500"><AlertCircle className="h-3.5 w-3.5 text-red-500" /> Rejected — Resubmit</span>
+      </div>
+
       {/* Projects List */}
       <div className="space-y-4">
         {submissions.map((sub, i) => {
           const project = sub.internship_projects;
+          const accessible = isProjectAccessible(sub, i);
+          const lockReason = !accessible ? getLockReason(sub, i) : null;
           const statusInfo = PROJECT_STATUS_LABELS[sub.status];
-          const canSubmit = sub.status === 'in_progress' || sub.status === 'failed';
+          const canSubmit = accessible && (sub.status === 'in_progress' || sub.status === 'failed');
           const isOpen = activeSubmit === sub.id;
-          // Show the stored github URL if one exists
           const githubLink = (sub.file_urls || []).find(u => u.includes('github.com'));
 
           return (
-            <div key={project.id} className={cn('card overflow-hidden', sub.status === 'passed' && 'border-green-200 bg-green-50/30')}>
+            <div
+              key={project.id}
+              className={cn(
+                'card overflow-hidden transition-all',
+                !accessible && 'opacity-60 bg-gray-50',
+                sub.status === 'passed' && 'border-green-200 bg-green-50/30',
+              )}
+            >
               <div className="p-5">
                 <div className="flex items-start gap-4">
-                  <div className="mt-0.5 shrink-0">{statusIcon(sub.status)}</div>
+                  <div className="mt-0.5 shrink-0">{statusIcon(sub.status, !accessible)}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <span className="text-xs text-gray-400">Week {project.week_number} · Project {i + 1}</span>
-                      <span className={cn('badge text-xs', statusInfo?.color)}>{statusInfo?.label}</span>
+                      {accessible ? (
+                        <span className={cn('badge text-xs', statusInfo?.color)}>{statusInfo?.label}</span>
+                      ) : (
+                        <span className="badge bg-gray-100 text-gray-500 text-xs flex items-center gap-1">
+                          <Lock className="h-3 w-3" /> Locked
+                        </span>
+                      )}
                       {sub.attempt_number > 1 && (
                         <span className="badge bg-orange-100 text-orange-700 text-xs">Attempt #{sub.attempt_number}</span>
                       )}
@@ -159,8 +231,16 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
                     <h3 className="font-semibold text-gray-900">{project.title}</h3>
                     <p className="text-xs text-gray-500 mt-1 line-clamp-2">{project.description}</p>
 
-                    {/* GitHub Link Display */}
-                    {githubLink && (
+                    {/* Lock reason badge */}
+                    {!accessible && lockReason && (
+                      <div className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs text-amber-700 font-medium">
+                        <Calendar className="h-3 w-3" />
+                        {lockReason}
+                      </div>
+                    )}
+
+                    {/* GitHub Link */}
+                    {githubLink && accessible && (
                       <a
                         href={githubLink}
                         target="_blank"
@@ -173,7 +253,7 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
                     )}
 
                     {/* Feedback */}
-                    {sub.feedback && (
+                    {sub.feedback && accessible && (
                       <button
                         onClick={() => setExpandedFeedback(expandedFeedback === sub.id ? null : sub.id)}
                         className="mt-3 flex items-center gap-1.5 text-xs font-medium text-primary-600 hover:underline"
@@ -195,7 +275,7 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
                       )}
                     </AnimatePresence>
 
-                    {sub.submitted_at && (
+                    {sub.submitted_at && accessible && (
                       <p className="text-xs text-gray-400 mt-2">Submitted: {formatDate(sub.submitted_at)}</p>
                     )}
                   </div>
@@ -223,7 +303,6 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
                     className="border-t border-gray-200 bg-gray-50 p-5"
                   >
                     <form onSubmit={handleSubmit((d) => handleSubmitProject(sub, d))} className="space-y-4">
-                      {/* GitHub URL — Required */}
                       <div>
                         <label htmlFor={`github-${sub.id}`} className="label flex items-center gap-1.5">
                           <Code className="h-3.5 w-3.5" /> GitHub Repository URL <span className="text-red-500">*</span>
@@ -244,7 +323,6 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
                         <p className="text-xs text-gray-400 mt-1">Upload your project to GitHub first, then paste the repository link here.</p>
                       </div>
 
-                      {/* Project Description */}
                       <div>
                         <label htmlFor={`text-${sub.id}`} className="label">Project Description <span className="text-red-500">*</span></label>
                         <textarea
@@ -280,14 +358,17 @@ export default function ProjectsClient({ enrollment, submissions, totalProjects 
         })}
       </div>
 
-      {/* All Passed → Payment CTA */}
+      {/* All Passed → Certificate CTA (no payment) */}
       {progress === 100 && total > 0 && (
-        <div className="rounded-2xl border-2 border-gold-400 bg-gold-100 p-6 text-center">
+        <div className="rounded-2xl border-2 border-yellow-400 bg-yellow-50 p-6 text-center">
           <div className="text-4xl mb-3">🏆</div>
           <h2 className="text-xl font-bold text-gray-900 mb-2">All Projects Completed!</h2>
-          <p className="text-sm text-gray-700 mb-4">Congratulations! Pay PKR 300 to unlock your official certificate.</p>
+          <p className="text-sm text-gray-700 mb-1">
+            Congratulations! Our admin team will review your final submissions and issue your verified certificate.
+          </p>
+          <p className="text-xs text-gray-500 mb-4">No additional payment required — your PKR 300 enrollment fee covers everything.</p>
           <a href="/certificates" className="btn-primary inline-flex">
-            💳 Unlock My Certificate
+            🎓 View My Certificates
           </a>
         </div>
       )}

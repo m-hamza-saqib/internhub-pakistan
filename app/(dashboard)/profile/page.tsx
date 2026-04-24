@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import ProfileForm from '@/components/forms/ProfileForm';
 
 export const metadata = {
-  title: 'Edit Profile — InternHub Pakistan',
+  title: 'Edit Profile — AHWTECHNOLOGIES',
 };
 
 export default async function ProfilePage() {
@@ -24,7 +24,9 @@ export default async function ProfilePage() {
     <div className="max-w-4xl mx-auto py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-900">Manage Profile</h1>
+        <p className="text-sm font-bold text-gray-900">hello@ahwtechnologies.com</p>
         <p className="text-gray-500 mt-2">
+          📧 Email: hello@ahwtechnologies.com
           Keep your professional profile updated to increase your chances of selection.
         </p>
       </div>
