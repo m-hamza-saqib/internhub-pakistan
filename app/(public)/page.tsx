@@ -77,8 +77,29 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
   );
 }
 
+import { createClient } from '@/lib/supabase/client';
+import InternshipCard from '@/components/cards/InternshipCard';
+
 /* ─── Main Page ─── */
 export default function HomePage() {
+  const [featuredInternships, setFeaturedInternships] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const supabase = createClient();
+
+  useEffect(() => {
+    const fetchLatest = async () => {
+      const { data } = await supabase
+        .from('internships')
+        .select('*')
+        .eq('is_published', true)
+        .order('created_at', { ascending: false })
+        .limit(3);
+      
+      if (data) setFeaturedInternships(data);
+      setLoading(false);
+    };
+    fetchLatest();
+  }, []);
 
   return (
 
@@ -271,6 +292,49 @@ export default function HomePage() {
               Browse All Slots <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ── FEATURED INTERNSHIPS ── */}
+      <section className="section bg-white py-24 relative">
+        <div className="container">
+           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+              <div className="max-w-xl">
+                 <div className="flex items-center gap-2 mb-4 text-primary-500 font-black text-[10px] uppercase tracking-[0.3em]">
+                    <TrendingUp className="h-4 w-4" /> Fresh Opportunities
+                 </div>
+                 <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight">
+                    Featured <span className="italic opacity-80 text-primary-600">Programs</span>
+                 </h2>
+              </div>
+              <Link href="/internships" className="btn-secondary group">
+                 View All Openings <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+           </div>
+
+           {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 {[1,2,3].map(i => <div key={i} className="h-[400px] rounded-3xl bg-gray-50 animate-pulse border border-gray-100" />)}
+              </div>
+           ) : featuredInternships.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 {featuredInternships.map((internship, i) => (
+                    <motion.div
+                       key={internship.id}
+                       initial={{ opacity: 0, y: 20 }}
+                       whileInView={{ opacity: 1, y: 0 }}
+                       viewport={{ once: true }}
+                       transition={{ delay: i * 0.1 }}
+                    >
+                       <InternshipCard internship={internship} />
+                    </motion.div>
+                 ))}
+              </div>
+           ) : (
+              <div className="text-center py-20 rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/30">
+                 <p className="text-gray-400 font-medium">New internship tracks are coming soon!</p>
+              </div>
+           )}
         </div>
       </section>
 

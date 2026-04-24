@@ -61,6 +61,7 @@ export default function InternshipForm({ initialData }: { initialData?: any }) {
             duration_weeks: data.duration_weeks,
             difficulty: data.difficulty,
             spots_total: data.spots_total,
+            is_published: initialData.is_published ?? true,
           })
           .eq('id', initialData.id);
 

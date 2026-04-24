@@ -33,11 +33,8 @@ function useInternships(filters: Filters) {
   return useQuery({
     queryKey: ['internships', filters],
     queryFn: async () => {
-      let query = supabase
-        .from('internships')
-        .select('*')
-        .eq('is_published', true)
-        .eq('is_archived', false);
+      // DEBUG: We loosen the filter to see if ANYTHING comes back
+      let query = supabase.from('internships').select('*');
 
       if (filters.search) {
         query = query.textSearch('title', filters.search, { type: 'websearch' });
@@ -58,10 +55,16 @@ function useInternships(filters: Filters) {
       }
 
       const { data, error } = await query.limit(30);
-      if (error) throw error;
+      
+      if (error) {
+        console.error('Supabase Query Error:', error);
+        throw error;
+      }
+      
       return (data as Internship[]) || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 1000, 
+    retry: false,
   });
 }
 
@@ -69,7 +72,7 @@ export default function InternshipsPage() {
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [searchInput, setSearchInput] = useState('');
-  const { data: internships = [], isLoading } = useInternships(filters);
+  const { data: internships = [], isLoading, error } = useInternships(filters);
 
   const updateFilter = useCallback(<K extends keyof Filters>(key: K, value: Filters[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -290,7 +293,12 @@ export default function InternshipsPage() {
             </p>
 
             {/* Grid */}
-            {isLoading ? (
+            {error ? (
+              <div className="p-6 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm">
+                 <p className="font-bold mb-1">Database Error:</p>
+                 <p>{(error as any).message || 'Failed to fetch internships. Please check your Supabase connection and RLS policies.'}</p>
+              </div>
+            ) : isLoading ? (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="card animate-pulse">
