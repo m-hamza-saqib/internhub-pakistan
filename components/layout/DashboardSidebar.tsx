@@ -97,7 +97,9 @@ export default function DashboardSidebar({ open = true, onClose }: DashboardSide
       {/* Header / Logo */}
       <div className="flex flex-col px-6 py-10">
         <div className="flex items-center justify-between mb-2">
-          <Logo className="scale-110 origin-left" />
+          <Link href="/" className="transition-transform active:scale-95">
+            <Logo className="scale-110 origin-left" />
+          </Link>
           {onClose && (
             <button 
               onClick={onClose} 
