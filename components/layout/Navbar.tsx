@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Bell, ChevronDown, LogOut, User, Settings, LayoutDashboard, Home, Briefcase, Info, HelpCircle } from 'lucide-react';
+import { Menu, X, Bell, ChevronDown, LogOut, User, Settings, LayoutDashboard, Home, Briefcase, Info, HelpCircle, ArrowRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { getInitials } from '@/lib/utils';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
