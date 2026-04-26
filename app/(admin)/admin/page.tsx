@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
     adminClient.from('applications').select('id', { count: 'exact', head: true }),
     adminClient.from('enrollments').select('id', { count: 'exact', head: true }).not('certificate_id', 'is', null),
     adminClient.from('payments').select('amount, currency, status').eq('status', 'completed'),
-    adminClient.from('applications').select('id, user_id, status, applied_at, profiles!applications_user_id_fkey(full_name, email), internships(title)').order('applied_at', { ascending: false }).limit(10),
+    adminClient.from('applications').select('id, user_id, status, applied_at, internships(title)').order('applied_at', { ascending: false }).limit(10),
     adminClient.from('project_submissions').select('id', { count: 'exact', head: true }).eq('status', 'under_review'),
   ])) as any[];
 
@@ -52,8 +52,19 @@ export default async function AdminDashboardPage() {
   const recentAppsData = recentAppsRes.data || [];
   const authUsers = authUsersRes.data?.users || [];
 
+  // Fetch profiles for the recent apps separately
+  const recentUserIds = [...new Set(recentAppsData.map((a: any) => a.user_id))];
+  const { data: recentProfiles } = await adminClient
+    .from('profiles')
+    .select('id, full_name, email')
+    .in('id', recentUserIds);
+
+  const profileMap: Record<string, any> = Object.fromEntries(
+    (recentProfiles || []).map((p: any) => [p.id, p])
+  );
+
   const recentApps = recentAppsData.map((app: any) => {
-    let appUser = app.profiles;
+    let appUser = profileMap[app.user_id];
     if (!appUser) {
       const authUser = authUsers.find((u: any) => u.id === app.user_id);
       appUser = {

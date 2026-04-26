@@ -29,18 +29,27 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { action, rejection_reason, admin_notes } = parsed.data;
 
-  // Get application with user and internship details
+  // Get application without broken profiles join
   const { data: applicationRaw, error: fetchError } = await adminClient
     .from('applications')
-    .select('*, applicant:profiles!applications_user_id_fkey(full_name, email), internship:internships(title, category, duration_weeks, difficulty, id)')
+    .select('*, internship:internships(title, category, duration_weeks, difficulty, id)')
     .eq('id', applicationId)
-    .single();
+    .maybeSingle();
     
   if (fetchError || !applicationRaw) {
     return NextResponse.json({ success: false, error: { code: 'NOT_FOUND', message: 'Application not found.' } }, { status: 404 });
   }
 
   const application = applicationRaw as any;
+
+  // Fetch applicant separately
+  const { data: profile } = await adminClient
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', application.user_id)
+    .maybeSingle();
+
+  application.applicant = profile || { full_name: 'Unknown User', email: 'Unknown' };
   const internship = application.internship;
 
   if (action === 'accept') {
