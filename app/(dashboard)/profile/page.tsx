@@ -6,7 +6,16 @@ export const metadata = {
   title: 'Edit Profile — AWH TECH',
 };
 
-export default async function ProfilePage() {
+import { AlertCircle } from 'lucide-react';
+
+export default async function ProfilePage(
+  props: {
+    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
+  }
+) {
+  const searchParams = await props.searchParams;
+  const isOnboarding = searchParams?.onboard === 'true';
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -34,7 +43,7 @@ export default async function ProfilePage() {
       // so the user can fill it out manually.
     } else {
       // Redirect to self to fetch the new profile
-      redirect('/profile');
+      redirect('/profile' + (isOnboarding ? '?onboard=true' : ''));
     }
   }
 
@@ -46,6 +55,20 @@ export default async function ProfilePage() {
           Keep your professional details accurate. High completeness scores improve your selection chances.
         </p>
       </div>
+
+      {isOnboarding && (
+        <div className="mb-8 p-6 rounded-2xl bg-red-50 border border-red-100 flex items-start gap-4">
+          <div className="p-3 bg-red-100 text-red-600 rounded-xl shrink-0">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+          <div>
+            <h3 className="font-bold text-red-900 text-lg mb-1">Profile Completion Required</h3>
+            <p className="text-red-700 text-sm font-medium">
+              You must fully complete all core profile fields (Phone, CNIC, Location, and Academic Info) before you can access the platform dashboard. Please fill out the form below.
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="card md:p-8 border-none shadow-premium bg-white">
         <ProfileForm initialData={profile || { id: user.id, email: user.email }} />

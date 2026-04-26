@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, checkProfileCompletion } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import ProjectsClient from './ProjectsClient';
 
@@ -8,6 +8,9 @@ export default async function ProjectsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  const isProfileComplete = await checkProfileCompletion(supabase, user.id);
+  if (!isProfileComplete) redirect('/profile?onboard=true');
 
   const { data: enrollmentRaw } = await supabase
     .from('enrollments')

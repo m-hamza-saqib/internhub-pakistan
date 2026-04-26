@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, checkProfileCompletion } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { formatDate, calculateDaysLeft, cn } from '@/lib/utils';
 import { Clock, Calendar, Briefcase, BookOpen, ChevronRight, Download, Share2, Wallet, PartyPopper, AlertCircle } from 'lucide-react';
@@ -11,11 +11,22 @@ export default async function MyInternshipPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
+  const isProfileComplete = await checkProfileCompletion(supabase, user.id);
+  if (!isProfileComplete) redirect('/profile?onboard=true');
+
   // 1. Fetch active enrollment
   const { data: enrollment } = await supabase
     .from('enrollments')
     .select('*, internships(title, category, duration_weeks, difficulty, description, what_you_learn), project_submissions(status)')
     .eq('user_id', user.id)
+    .maybeSingle();
+
+  // 1b. Check if payment proof is pending
+  const { data: pendingProof } = await supabase
+    .from('payment_proofs')
+    .select('id, status')
+    .eq('user_id', user.id)
+    .eq('status', 'pending')
     .maybeSingle();
 
   // 2. If no active enrollment, fetch the latest accepted application
@@ -124,6 +135,33 @@ export default async function MyInternshipPage() {
     );
   }
 
+  // CASE 1.5: Payment Proof Pending
+  if (pendingProof && !enrollment) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20 px-4">
+        <div className="h-20 w-20 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Clock className="h-10 w-10 animate-spin" style={{ animationDuration: '3s' }} />
+        </div>
+        <h1 className="text-3xl font-black text-gray-900 mb-3">Verification in Progress</h1>
+        <p className="text-gray-500 mb-8 max-w-sm mx-auto leading-relaxed">
+          We've received your payment proof! Our admin team is currently verifying the transaction. 
+          This usually takes <strong>24–48 hours</strong>.
+        </p>
+        <div className="card p-6 bg-amber-50/50 border-amber-100 text-left max-w-md mx-auto">
+          <p className="text-xs font-bold text-amber-800 uppercase tracking-widest mb-2">Next Steps</p>
+          <ul className="space-y-2 text-sm text-amber-900/70 font-medium">
+            <li className="flex items-center gap-2">● Admin checks your reference number</li>
+            <li className="flex items-center gap-2">● Dashboard & projects unlock automatically</li>
+            <li className="flex items-center gap-2">● You'll receive an in-app notification</li>
+          </ul>
+        </div>
+        <div className="mt-8">
+            <Link href="/dashboard" className="text-sm font-bold text-primary-600 hover:underline">← Back to Dashboard</Link>
+        </div>
+      </div>
+    );
+  }
+
   // CASE 2: Selected but Pending Payment/Sharing
   if (acceptedApplication) {
     const internship = acceptedApplication.internships;
@@ -153,7 +191,7 @@ export default async function MyInternshipPage() {
                 <p className="text-xs text-gray-500">Official proof of your selection</p>
               </div>
             </div>
-            <a href={acceptedApplication.offer_letter_url || '#'} target="_blank" rel="noopener noreferrer" className="btn-secondary py-2 px-4 text-xs flex items-center gap-2">
+            <a href={`/offer-letter/${acceptedApplication.id}`} target="_blank" rel="noopener noreferrer" className="btn-secondary py-2 px-4 text-xs flex items-center gap-2">
               <Download className="h-3.5 w-3.5" /> Download PDF
             </a>
           </div>

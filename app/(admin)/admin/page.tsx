@@ -22,10 +22,11 @@ export default async function AdminDashboardPage() {
   const adminClient = await createAdminClient();
 
   const [
-    authUsersRes, activeEnrollRes, pendingAppsRes, allAppsRes,
+    authUsersRes, profilesCountRes, activeEnrollRes, pendingAppsRes, allAppsRes,
     certificatesRes, paymentsRes, recentAppsRes, submissionsRes,
   ] = (await Promise.all([
     adminClient.auth.admin.listUsers(),
+    adminClient.from('profiles').select('id', { count: 'exact', head: true }),
     adminClient.from('enrollments').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     adminClient.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     adminClient.from('applications').select('id', { count: 'exact', head: true }),
@@ -35,7 +36,7 @@ export default async function AdminDashboardPage() {
     adminClient.from('project_submissions').select('id', { count: 'exact', head: true }).eq('status', 'under_review'),
   ])) as any[];
 
-  const totalUsersCount = authUsersRes.data?.users?.length || 0;
+  const totalUsersCount = (authUsersRes.data?.users?.length > (profilesCountRes.count || 0)) ? authUsersRes.data?.users?.length : (profilesCountRes.count || 0);
   const totalRevenuePKR = (paymentsRes.data as any[] || []).filter((p: any) => p.currency === 'PKR').reduce((sum: number, p: any) => sum + p.amount, 0);
   const totalRevenueUSD = (paymentsRes.data as any[] || []).filter((p: any) => p.currency === 'USD').reduce((sum: number, p: any) => sum + p.amount, 0);
 

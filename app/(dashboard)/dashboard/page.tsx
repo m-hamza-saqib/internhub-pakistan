@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, checkProfileCompletion } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { formatDate, calculateDaysLeft } from '@/lib/utils';
@@ -11,6 +11,9 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  const isProfileComplete = await checkProfileCompletion(supabase, user.id);
+  if (!isProfileComplete) redirect('/profile?onboard=true');
 
   const [profileRes, applicationsRes, enrollmentRes, notificationsRes, certificatesRes] = (await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),

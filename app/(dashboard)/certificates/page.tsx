@@ -1,6 +1,6 @@
 import { Award, Share2, ExternalLink, Lock } from 'lucide-react';
 import CertificateDownload from '@/components/pdf/CertificateDownload';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, checkProfileCompletion } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { formatDate } from '@/lib/utils';
 
@@ -10,6 +10,9 @@ export default async function CertificatesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
+
+  const isProfileComplete = await checkProfileCompletion(supabase, user.id);
+  if (!isProfileComplete) redirect('/profile?onboard=true');
 
   const { data: profileRaw } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
   const profile = profileRaw as any;
@@ -120,12 +123,20 @@ export default async function CertificatesPage() {
                         <ExternalLink className="h-4 w-4" /> View Certificate
                       </a>
                       <a
+                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(verifyUrl)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary text-sm flex items-center gap-2"
+                      >
+                        <Share2 className="h-4 w-4" /> Share Success
+                      </a>
+                      <a
                         href={linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-lg border border-[#0077B5]/30 bg-[#0077B5]/10 px-4 py-2 text-sm font-semibold text-[#0077B5] hover:bg-[#0077B5]/20 transition-colors"
                       >
-                        <Share2 className="h-4 w-4" /> Add to LinkedIn
+                        <Award className="h-4 w-4" /> Add to Profile
                       </a>
                     </div>
                   ) : (

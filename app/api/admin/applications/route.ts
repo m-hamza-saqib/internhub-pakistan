@@ -16,14 +16,26 @@ export async function GET() {
     const { data: authUsersRes } = await supabase.auth.admin.listUsers();
     const authUsers = authUsersRes.users || [];
 
-    const augmentedData = (data as any[])?.map((app: any) => {
+    const augmentedData = await Promise.all((data as any[])?.map(async (app: any) => {
       let applicant = app.applicant;
-      if (!applicant) {
-        const authUser = authUsers.find(u => u.id === app.user_id);
+      if (!applicant && app.user_id) {
+        // Try finding in current page of listUsers
+        let authUser = authUsers.find(u => u.id === app.user_id);
+        
+        // If not in page, fetch individually (fallback for large user bases)
+        if (!authUser) {
+          try {
+            const { data: singleUser } = await supabase.auth.admin.getUserById(app.user_id);
+            authUser = singleUser.user as any;
+          } catch (e) {
+            console.error('Failed to fetch individual user for fallback:', e);
+          }
+        }
+
         applicant = {
           full_name: authUser?.user_metadata?.full_name || 'Anonymous User',
           email: authUser?.email || 'Unknown',
-          university: null,
+          university: 'Profile Pending',
           city: null,
           province: null,
           profile_completeness: 0,
@@ -31,9 +43,9 @@ export async function GET() {
       }
       return {
         ...app,
-        applicant
+        applicant: applicant || { full_name: 'Unknown User', email: 'Unknown' }
       };
-    });
+    }));
 
     return NextResponse.json(augmentedData);
   } catch (error: any) {
