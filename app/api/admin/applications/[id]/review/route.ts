@@ -55,20 +55,26 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (action === 'accept') {
     try {
       // 1. Update application status to ACCEPTED
-      // Note: We don't create enrollment here anymore. 
-      // Enrollment happens after payment verification.
-      await (adminClient.from('applications') as any).update({
+      const { error: updateError } = await (adminClient.from('applications') as any).update({
         status: 'accepted',
         reviewed_at: new Date().toISOString(),
         reviewed_by: user.id,
         admin_notes: admin_notes || 'Selected for next batch.',
-        // In a real scenario, you'd generate a PDF and store URL here. 
-        // For now, we point to a template or existing URL.
         offer_letter_url: application.offer_letter_url || 'https://internhub-pakistan.vercel.app/offer-letter-template.pdf'
       }).eq('id', applicationId);
 
+      if (updateError) {
+        console.error('Core Accept Update Failed, trying fallback:', updateError);
+        // Fallback: update only status if extra columns fail
+        const { error: fallbackError } = await (adminClient.from('applications') as any)
+          .update({ status: 'accepted' })
+          .eq('id', applicationId);
+          
+        if (fallbackError) throw fallbackError;
+      }
+
       // 2. Create selection notification
-      await (adminClient.from('notifications') as any).insert({
+      const { error: notifyError } = await (adminClient.from('notifications') as any).insert({
         user_id: application.user_id,
         type: 'application_update',
         title: '🎉 Congratulations! You are Selected!',
@@ -76,31 +82,47 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         link: '/my-internship',
         is_read: false,
       });
+      // We don't throw for notifications to avoid breaking the core flow
 
-      return NextResponse.json({ success: true, message: 'Application accepted. Student notified to pay fee.' });
+      return NextResponse.json({ success: true, message: 'Application accepted. Student notified.' });
     } catch (err: any) {
-      return NextResponse.json({ success: false, error: { message: 'Failed to update application.', details: err.message } }, { status: 500 });
+      console.error('Accept Action Error:', err);
+      return NextResponse.json({ success: false, error: { message: 'Failed to accept application.', details: err.message } }, { status: 500 });
     }
 
   } else if (action === 'reject') {
-    await (adminClient.from('applications') as any).update({
-      status: 'rejected',
-      rejection_reason,
-      admin_notes,
-      reviewed_at: new Date().toISOString(),
-      reviewed_by: user.id,
-    }).eq('id', applicationId);
+    try {
+      const { error: updateError } = await (adminClient.from('applications') as any).update({
+        status: 'rejected',
+        rejection_reason,
+        admin_notes,
+        reviewed_at: new Date().toISOString(),
+        reviewed_by: user.id,
+      }).eq('id', applicationId);
 
-    await (adminClient.from('notifications') as any).insert({
-      user_id: application.user_id,
-      type: 'application_update',
-      title: 'Application Update',
-      body: `Your application for "${internship.title}" was not selected this time. However, you can apply again for our upcoming batches!`,
-      link: '/internships',
-      is_read: false,
-    });
+      if (updateError) {
+        console.error('Core Reject Update Failed, trying fallback:', updateError);
+        const { error: fallbackError } = await (adminClient.from('applications') as any)
+          .update({ status: 'rejected' })
+          .eq('id', applicationId);
+          
+        if (fallbackError) throw fallbackError;
+      }
 
-    return NextResponse.json({ success: true, message: 'Application rejected.' });
+      await (adminClient.from('notifications') as any).insert({
+        user_id: application.user_id,
+        type: 'application_update',
+        title: 'Application Update',
+        body: `Your application for "${internship.title}" was not selected this time. However, you can apply again for our upcoming batches!`,
+        link: '/internships',
+        is_read: false,
+      });
+
+      return NextResponse.json({ success: true, message: 'Application rejected.' });
+    } catch (err: any) {
+      console.error('Reject Action Error:', err);
+      return NextResponse.json({ success: false, error: { message: 'Failed to reject application.', details: err.message } }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'Invalid action.' } }, { status: 400 });
