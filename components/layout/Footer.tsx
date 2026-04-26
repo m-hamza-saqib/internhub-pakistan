@@ -22,9 +22,9 @@ const COMPANY_LINKS = [
 ];
 
 const LEGAL_LINKS = [
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/terms',   label: 'Terms of Service' },
-  { href: '/refund',  label: 'Refund Policy' },
+  { href: '/privacy-policy',   label: 'Privacy Policy' },
+  { href: '/terms-of-service', label: 'Terms of Service' },
+  { href: '/refund-policy',    label: 'Refund Policy' },
 ];
 
 export default function Footer() {

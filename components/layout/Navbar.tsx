@@ -100,7 +100,7 @@ export default function Navbar() {
                 )}
               </Link>
             ))}
-            {(profile?.is_lifetime_member || profile?.role === 'admin') && (
+            {user && (
               <Link
                 href="/dashboard"
                 className={`relative text-sm font-semibold transition-colors hover:text-primary-500 ${textColor} ${pathname === '/dashboard' ? 'text-primary-500' : ''}`}
@@ -149,12 +149,11 @@ export default function Navbar() {
                           <p className="text-sm font-bold text-gray-900 truncate">{profile?.full_name || 'My Account'}</p>
                           <p className="text-[10px] font-medium text-gray-400 truncate uppercase tracking-widest">{profile?.role || 'Intern'}</p>
                         </div>
-                        {(profile?.is_lifetime_member || profile?.role === 'admin') && (
-                          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
-                            <LayoutDashboard className="h-4 w-4 text-primary-500" />
-                            Dashboard
-                          </Link>
-                        )}
+                        
+                        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
+                          <LayoutDashboard className="h-4 w-4 text-primary-500" />
+                          Dashboard
+                        </Link>
                         {profile?.role === 'admin' && (
                           <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
                             <Settings className="h-4 w-4 text-emerald-500" />
@@ -252,8 +251,8 @@ export default function Navbar() {
               )}
 
               {/* Navigation Links */}
-              <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
-                <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Navigation</p>
+              <div className="flex-1 overflow-y-auto py-8 px-4 space-y-1 min-h-0">
+                <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Main Menu</p>
                 {NAV_LINKS.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href;
@@ -262,7 +261,7 @@ export default function Navbar() {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-4 text-sm font-bold tracking-tight transition-all active:scale-95 mb-1 ${
                         isActive 
                           ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' 
                           : 'text-gray-600 hover:bg-gray-50'
@@ -276,23 +275,38 @@ export default function Navbar() {
 
                 {user && (
                   <>
-                    <div className="my-4 mx-4 border-t border-gray-100" />
-                    <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Portal</p>
+                    <div className="my-6 mx-4 border-t border-gray-100" />
+                    <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-4">Workspace</p>
+                    
+                    {profile?.role === 'admin' && (
+                      <Link 
+                        href="/admin" 
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex items-center gap-4 rounded-2xl px-4 py-4 text-sm font-bold tracking-tight transition-all active:scale-95 mb-1 ${
+                          pathname === '/admin' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Settings className="h-5 w-5" />
+                        Admin Panel
+                      </Link>
+                    )}
+
                     <Link 
                       href="/dashboard" 
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
-                        pathname === '/dashboard' ? 'bg-primary-500 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-4 text-sm font-bold tracking-tight transition-all active:scale-95 mb-1 ${
+                        pathname === '/dashboard' || pathname === '/my-internship' ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
                       <LayoutDashboard className="h-5 w-5" />
                       Dashboard
                     </Link>
+
                     <Link 
                       href="/profile" 
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
-                        pathname === '/profile' ? 'bg-primary-500 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-4 text-sm font-bold tracking-tight transition-all active:scale-95 mb-1 ${
+                        pathname === '/profile' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
                       <User className="h-5 w-5" />
@@ -303,7 +317,7 @@ export default function Navbar() {
               </div>
 
               {/* Action Area */}
-              <div className="p-6 border-t border-gray-100 bg-gray-50/30">
+              <div className="p-6 border-t border-gray-100 bg-gray-50/50">
                 {!user ? (
                   <div className="space-y-3">
                     <Link 
@@ -324,7 +338,7 @@ export default function Navbar() {
                 ) : (
                   <button 
                     onClick={handleSignOut}
-                    className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors"
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl text-sm font-bold text-rose-600 bg-rose-50 border border-rose-100 hover:bg-rose-100 transition-colors shadow-sm"
                   >
                     <LogOut className="h-5 w-5" />
                     Sign Out
