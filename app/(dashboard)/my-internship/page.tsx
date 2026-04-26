@@ -5,6 +5,7 @@ import { Clock, Calendar, Briefcase, BookOpen, ChevronRight, Download, Share2, W
 import Link from 'next/link';
 
 export const metadata = { title: 'My Internship' };
+export const dynamic = 'force-dynamic';
 
 export default async function MyInternshipPage() {
   const supabase = await createClient();
