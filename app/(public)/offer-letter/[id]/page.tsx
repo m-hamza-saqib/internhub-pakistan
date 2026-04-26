@@ -4,7 +4,27 @@ import { Award, Briefcase, Mail, MapPin, Printer } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import Image from 'next/image';
 
-export const metadata = { title: 'Offer Letter — AWH TECH' };
+export async function generateMetadata(props: { params: Promise<{ id: string }> }) {
+  const { id } = await props.params;
+  const supabase = await createClient();
+  const { data: app } = await supabase
+    .from('applications')
+    .select('*, internships(title), profiles(full_name)')
+    .eq('id', id)
+    .single() as any;
+
+  if (!app) return { title: 'Offer Letter — AWH TECH' };
+
+  return {
+    title: `Offer Letter - ${app.profiles?.full_name}`,
+    description: `Official Offer Letter for ${app.internships?.title} internship at AWH TECHNOLOGIES.`,
+    openGraph: {
+      title: `Selected as ${app.internships?.title} Intern`,
+      description: `Thrilled to join AWH TECHNOLOGIES as a ${app.internships?.title} intern!`,
+      images: ['/logo.png'], // Add a fallback logo if needed
+    },
+  };
+}
 
 export default async function OfferLetterPage(
   props: { params: Promise<{ id: string }> }

@@ -6,6 +6,7 @@ import { APPLICATION_STATUS_LABELS } from '@/lib/constants';
 import { FileText, Clock } from 'lucide-react';
 
 import OfferLetterDownload from '@/components/pdf/OfferLetterDownload';
+import OfferLetterShare from '@/components/pdf/OfferLetterShare';
 
 export const metadata = { title: 'My Applications' };
 
@@ -82,12 +83,18 @@ export default async function ApplicationsPage() {
                           Go to Dashboard →
                         </Link>
                         {app.enrollments?.[0] && (
-                          <OfferLetterDownload 
-                            internName={profile?.full_name || 'Intern'}
-                            internshipTitle={internship?.title || 'Internship'}
-                            startDate={app.enrollments[0].start_date}
-                            endDate={app.enrollments[0].end_date}
-                          />
+                          <div className="flex flex-col gap-2">
+                            <OfferLetterDownload 
+                              internName={profile?.full_name || 'Intern'}
+                              internshipTitle={internship?.title || 'Internship'}
+                              startDate={app.enrollments[0].start_date}
+                              endDate={app.enrollments[0].end_date}
+                            />
+                            <OfferLetterShare 
+                              applicationId={app.id}
+                              internshipTitle={internship?.title || 'Internship'}
+                            />
+                          </div>
                         )}
                       </div>
                     )}
