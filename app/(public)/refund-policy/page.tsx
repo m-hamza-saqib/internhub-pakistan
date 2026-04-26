@@ -1,4 +1,4 @@
-import { WalletX, ShieldAlert, History, ArrowRight } from 'lucide-react';
+import { Wallet, ShieldAlert, History, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata = {
@@ -14,7 +14,7 @@ export default function RefundPolicyPage() {
         <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(circle, #4f46e5 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
         <div className="container relative z-10 text-center">
           <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-rose-500/10 text-rose-500 mb-8 border border-rose-500/20 animate-pulse">
-            <WalletX size={40} />
+            <Wallet size={40} />
           </div>
           <h1 className="font-instrument-serif text-6xl text-white mb-6">Refund Policy</h1>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
