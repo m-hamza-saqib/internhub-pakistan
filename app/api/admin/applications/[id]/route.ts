@@ -6,31 +6,41 @@ export async function GET(request: Request, context: { params: Promise<{ id: str
     const { id } = await context.params;
     const supabase = await createAdminClient();
 
-    // The service role key bypasses RLS, resolving the profile visibility issue.
-    const { data, error } = await supabase
+    // Fetch application without broken profiles join
+    const { data: application, error } = await supabase
       .from('applications')
-      .select(`
-        *,
-        applicant:profiles!applications_user_id_fkey (*),
-        internship:internship_id (*)
-      `)
+      .select('*, internship:internships(*)')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
+    if (!application) return NextResponse.json({ error: 'Application not found' }, { status: 404 });
 
-    const singleData = data as any;
-    if (!singleData.applicant && singleData.user_id) {
-      const { data: authData } = await supabase.auth.admin.getUserById(singleData.user_id);
-      if (authData.user) {
-        singleData.applicant = {
-          full_name: authData.user.user_metadata?.full_name || 'Anonymous User',
-          email: authData.user.email || 'Unknown',
-          university: null,
-          city: null,
-          province: null,
-          profile_completeness: 0,
-        };
+    const singleData = application as any;
+    
+    // Fetch profile separately
+    if (singleData.user_id) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', singleData.user_id)
+        .maybeSingle();
+      
+      if (profile) {
+        singleData.applicant = profile;
+      } else {
+        // Fallback to Auth User if profile is missing
+        const { data: authData } = await supabase.auth.admin.getUserById(singleData.user_id);
+        if (authData?.user) {
+          singleData.applicant = {
+            full_name: authData.user.user_metadata?.full_name || 'Anonymous User',
+            email: authData.user.email || 'Unknown',
+            university: 'Profile Pending',
+            city: null,
+            province: null,
+            profile_completeness: 0,
+          };
+        }
       }
     }
 
