@@ -31,7 +31,7 @@ export default async function CertificatesPage() {
     <div className="max-w-3xl mx-auto space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">My Certificates</h1>
-        <p className="text-sm text-gray-500 mt-1">Your earned certifications from AHWTECHNOLOGIES</p>
+        <p className="text-sm text-gray-500 mt-1">Your earned certifications from AWH TECH</p>
       </div>
 
       {/* Active Internship Reminder */}
@@ -70,7 +70,7 @@ export default async function CertificatesPage() {
     const isUnlocked = !!enrollment.certificate_id;
             const verifyUrl = `${appUrl}/verify/${enrollment.certificate_id}`;
             const linkedinUrl = enrollment.certificate_id
-              ? `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(internship.title)}&organizationName=AHWTECHNOLOGIES&certUrl=${encodeURIComponent(verifyUrl)}&certId=${enrollment.certificate_id}`
+              ? `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(internship.title)}&organizationName=AWH TECH&certUrl=${encodeURIComponent(verifyUrl)}&certId=${enrollment.certificate_id}`
               : '#';
 
             return (

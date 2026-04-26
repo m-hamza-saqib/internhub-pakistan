@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `${data.title} Internship`,
     description: `Apply for ${data.title} remote internship. ${data.duration_weeks} weeks, ${data.difficulty} level. Get certified. Pakistani students welcome.`,
     openGraph: {
-      title: `${data.title} — AHWTECHNOLOGIES`,
+      title: `${data.title} — AWH TECH`,
       description: data.description.slice(0, 160),
       images: data.thumbnail_url ? [data.thumbnail_url] : [],
       locale: 'en_PK',

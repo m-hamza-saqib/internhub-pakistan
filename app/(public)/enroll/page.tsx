@@ -14,7 +14,7 @@ const PAYMENT_ACCOUNTS = [
     border: 'border-green-200',
     bg: 'bg-green-50',
     number: '0300-0000000',
-    name: 'AHWTECHNOLOGIES',
+    name: 'AWH TECH',
   },
   {
     method: 'JazzCash',
@@ -23,7 +23,7 @@ const PAYMENT_ACCOUNTS = [
     border: 'border-red-200',
     bg: 'bg-red-50',
     number: '0300-0000001',
-    name: 'AHWTECHNOLOGIES',
+    name: 'AWH TECH',
   },
   {
     method: 'Bank Transfer',
@@ -32,7 +32,7 @@ const PAYMENT_ACCOUNTS = [
     border: 'border-blue-200',
     bg: 'bg-blue-50',
     number: 'PK000000000000000000',
-    name: 'AHWTECHNOLOGIES — HBL / Meezan Bank',
+    name: 'AWH TECH — HBL / Meezan Bank',
   },
 ];
 
@@ -164,7 +164,7 @@ function EnrollContent() {
             <div className="h-8 w-8 rounded-lg bg-primary-500 flex items-center justify-center">
               <span className="text-xs font-bold text-white">AHW</span>
             </div>
-            <span className="text-sm font-bold text-white">AHWTECHNOLOGIES</span>
+            <span className="text-sm font-bold text-white">AWH TECH</span>
           </Link>
           <span className="text-xs text-white/40">One-Time Community Fee</span>
         </div>

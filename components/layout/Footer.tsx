@@ -16,9 +16,9 @@ const LinkedinIcon = () => (
 );
 
 const COMPANY_LINKS = [
-  { href: '/about',   label: 'About Us' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/faq',     label: 'FAQ' },
+  { href: '/about',   label: 'About AWH TECH' },
+  { href: '/contact', label: 'Contact Us' },
+  { href: '/faq',     label: 'Common FAQ' },
 ];
 
 const LEGAL_LINKS = [
@@ -38,7 +38,7 @@ export default function Footer() {
               <Logo variant="light" className="scale-110 origin-left" />
             </Link>
             <p className="text-sm font-medium leading-relaxed mb-10 max-w-sm text-gray-400/80">
-              Empowering the next generation of Pakistani talent through verified remote internships, real-world industry projects, and internationally recognized certification.
+              Building solutions delivering excellence. At AWH TECH, we empower the next generation of technical talent through industry-grade projects and verified professional certifications.
             </p>
             
             <div className="flex items-center gap-4">
@@ -59,7 +59,7 @@ export default function Footer() {
             {/* Categories */}
             <div>
               <h3 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                Core Tracks
+                Technical Tracks
               </h3>
               <ul className="space-y-4">
                 {INTERNSHIP_CATEGORIES.slice(0, 5).map((cat) => (
@@ -78,7 +78,7 @@ export default function Footer() {
             {/* Resources */}
             <div>
               <h3 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                Quick Access
+                Corporate
               </h3>
               <ul className="space-y-4">
                 {COMPANY_LINKS.map((link) => (
@@ -90,7 +90,7 @@ export default function Footer() {
                 ))}
                 <li>
                   <Link href="/register" className="text-sm font-bold text-primary-400 transition-all hover:text-white">
-                    Join Platform
+                    Onboard Now
                   </Link>
                 </li>
               </ul>
@@ -99,7 +99,7 @@ export default function Footer() {
             {/* Support */}
             <div>
               <h3 className="mb-6 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-                Contact & Help
+                Support Hub
               </h3>
               <div className="space-y-5">
                  <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ export default function Footer() {
                     </div>
                     <div>
                        <p className="text-[10px] font-bold text-gray-500 uppercase">WhatsApp</p>
-                       <p className="text-xs font-bold text-gray-200">+92 300 0000000</p>
+                       <p className="text-xs font-bold text-gray-200">Official Channel</p>
                     </div>
                  </div>
                  <div className="flex items-center gap-3">
@@ -116,8 +116,8 @@ export default function Footer() {
                        <Mail className="h-4 w-4" />
                     </div>
                     <div>
-                       <p className="text-[10px] font-bold text-gray-500 uppercase">Email Support</p>
-                       <p className="text-xs font-bold text-gray-200">hello@ahwtechnologies.com</p>
+                       <p className="text-[10px] font-bold text-gray-500 uppercase">Direct Email</p>
+                       <p className="text-xs font-bold text-gray-200">hello@awhtech.com</p>
                     </div>
                  </div>
               </div>
@@ -128,7 +128,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-20 flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-10 sm:flex-row">
           <div className="flex flex-col sm:flex-row items-center gap-4 text-xs font-medium">
-            <p>© {new Date().getFullYear()} AHWTECHNOLOGIES.</p>
+            <p>© {new Date().getFullYear()} AWH TECH Group.</p>
             <div className="hidden sm:block h-3 w-px bg-white/10" />
             <div className="flex items-center gap-4">
               {LEGAL_LINKS.map(link => (
@@ -139,7 +139,7 @@ export default function Footer() {
           <div className="flex items-center gap-2 rounded-full bg-emerald-500/5 px-3 py-1 border border-emerald-500/10">
             <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
             <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">
-              Live Systems Operational
+              Identity Verified
             </span>
           </div>
         </div>

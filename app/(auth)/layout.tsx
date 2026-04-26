@@ -10,7 +10,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <span className="text-sm font-bold text-white">AHW</span>
           </div>
           <span className="text-lg font-bold text-gray-900">
-            AHWTECHNOLOGIES
+            AWH TECH
           </span>
         </Link>
       </header>
@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {children}
       </main>
       <footer className="text-center text-xs text-gray-400 py-4">
-        © {new Date().getFullYear()} AHWTECHNOLOGIES. All rights reserved.
+        © {new Date().getFullYear()} AWH TECH. All rights reserved.
       </footer>
     </div>
   );

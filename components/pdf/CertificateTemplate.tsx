@@ -3,7 +3,7 @@ import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/render
 
 const styles = StyleSheet.create({
   page: {
-    padding: 0, // We'll use absolute positioning for the border
+    padding: 0,
     fontFamily: 'Helvetica',
     backgroundColor: '#ffffff',
   },
@@ -13,8 +13,17 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     bottom: 20,
-    borderWidth: 2,
-    borderColor: '#eab308', // Gold
+    borderWidth: 4,
+    borderColor: '#0f172a', // Dark Navy/Black
+  },
+  innerBorder: {
+    position: 'absolute',
+    top: 30,
+    left: 30,
+    right: 30,
+    bottom: 30,
+    borderWidth: 1,
+    borderColor: '#0f172a',
   },
   content: {
     padding: 60,
@@ -23,23 +32,25 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   logo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1e40af',
-    marginBottom: 40,
-  },
-  header: {
-    fontSize: 32,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#0f172a',
-    marginBottom: 10,
+    marginBottom: 30,
+    letterSpacing: -1,
+  },
+  header: {
+    fontSize: 34,
+    fontWeight: 'bold',
+    color: '#0f172a',
+    marginBottom: 5,
     textTransform: 'uppercase',
-    letterSpacing: 2,
   },
   subHeader: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#64748b',
-    marginBottom: 40,
+    marginBottom: 30,
+    letterSpacing: 2,
+    fontWeight: 'bold',
   },
   mainText: {
     fontSize: 16,
@@ -47,29 +58,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   internName: {
-    fontSize: 36,
-    fontWeight: 'black',
-    color: '#1e40af',
+    fontSize: 42,
+    fontWeight: 'heavy',
+    color: '#0f172a',
     marginBottom: 10,
-    textDecoration: 'underline',
+    fontStyle: 'italic',
   },
   completionText: {
-    fontSize: 14,
-    color: '#334155',
+    fontSize: 13,
+    color: '#475569',
     textAlign: 'center',
     marginBottom: 40,
-    lineHeight: 1.5,
+    lineHeight: 1.6,
+    maxWidth: 500,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 20,
-    paddingHorizontal: 40,
+    paddingHorizontal: 60,
   },
   signatureBox: {
     alignItems: 'center',
-    width: 150,
+    width: 170,
   },
   signatureLine: {
     width: '100%',
@@ -79,22 +91,20 @@ const styles = StyleSheet.create({
     paddingTop: 5,
   },
   qrCode: {
-    width: 80,
-    height: 80,
-    marginTop: 20,
+    width: 70,
+    height: 70,
   },
   verifyText: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#94a3b8',
-    marginTop: 5,
+    marginTop: 4,
   },
   certId: {
     position: 'absolute',
-    bottom: 40,
-    right: 40,
-    fontSize: 10,
+    bottom: 45,
+    right: 50,
+    fontSize: 8,
     color: '#94a3b8',
-    fontFamily: 'Courier',
   }
 });
 
@@ -116,48 +126,50 @@ export const CertificateTemplate = ({
   <Document>
     <Page size="A4" orientation="landscape" style={styles.page}>
       <View style={styles.border} />
+      <View style={styles.innerBorder} />
       
       <View style={styles.content}>
-        <Text style={styles.logo}>AHWTECHNOLOGIES</Text>
+        <Text style={styles.logo}>AWH TECH</Text>
         
-        <Text style={styles.header}>Certificate of Completion</Text>
-        <Text style={styles.subHeader}>PROUDLY PRESENTED TO</Text>
+        <Text style={styles.header}>Certificate of Achievement</Text>
+        <Text style={styles.subHeader}>BUILDING SOLUTIONS • DELIVERING EXCELLENCE</Text>
         
+        <Text style={styles.mainText}>THIS IS TO CERTIFY THAT</Text>
         <Text style={styles.internName}>{internName}</Text>
         
-        <Text style={styles.mainText}>For successfully completing the</Text>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#0f172a', marginBottom: 20 }}>
-          {internshipTitle} Internship Program
+        <Text style={styles.mainText}>has successfully completed the remote internship in</Text>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#0f172a', marginBottom: 20 }}>
+          {internshipTitle}
         </Text>
         
         <Text style={styles.completionText}>
-          This certificate recognizes the intern's commitment to professional growth and 
-          mastery of industry-standard workflows during this intensive remote program.
-          Completed on {completionDate}.
+          In recognition of outstanding dedication, technical proficiency, and successful delivery 
+          of industry-standard project requirements during the professional internship period.
+          Authorized on {completionDate}.
         </Text>
 
         <View style={styles.footer}>
           <View style={styles.signatureBox}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Suleman Mehmood</Text>
+            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Director of Operations</Text>
             <View style={styles.signatureLine}>
-              <Text style={{ fontSize: 8 }}>Program Director</Text>
+              <Text style={{ fontSize: 8 }}>AWH TECH</Text>
             </View>
           </View>
 
           <View style={{ alignItems: 'center' }}>
             {qrCodeUrl && <Image src={qrCodeUrl} style={styles.qrCode} />}
-            <Text style={styles.verifyText}>Scan to Verify</Text>
+            <Text style={styles.verifyText}>VERIFY CREDENTIAL</Text>
           </View>
 
           <View style={styles.signatureBox}>
-            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>AHWTECHNOLOGIES</Text>
+            <Text style={{ fontSize: 10, fontWeight: 'bold' }}>Official Seal</Text>
             <View style={styles.signatureLine}>
-              <Text style={{ fontSize: 8 }}>Official Seal</Text>
+              <Text style={{ fontSize: 8 }}>AWH TECH Pakistan</Text>
             </View>
           </View>
         </View>
 
-        <Text style={styles.certId}>Verification ID: {certificateId}</Text>
+        <Text style={styles.certId}>Credential ID: {certificateId}</Text>
       </View>
     </Page>
   </Document>

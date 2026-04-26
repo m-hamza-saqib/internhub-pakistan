@@ -4,17 +4,17 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Bell, ChevronDown, LogOut, User, Settings, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Bell, ChevronDown, LogOut, User, Settings, LayoutDashboard, Home, Briefcase, Info, HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { getInitials } from '@/lib/utils';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import Logo from './Logo';
 
 const NAV_LINKS = [
-  { href: '/',            label: 'Home' },
-  { href: '/internships', label: 'Internships' },
-  { href: '/about',       label: 'About' },
-  { href: '/faq',         label: 'FAQ' },
+  { href: '/',            label: 'Home',        icon: Home },
+  { href: '/internships', label: 'Internships', icon: Briefcase },
+  { href: '/about',       label: 'About',       icon: Info },
+  { href: '/faq',         label: 'FAQ',         icon: HelpCircle },
 ];
 
 export default function Navbar() {
@@ -157,7 +157,7 @@ export default function Navbar() {
                         )}
                         {profile?.role === 'admin' && (
                           <Link href="/admin" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
-                            <Settings className="h-4 w-4 text-accent-500" />
+                            <Settings className="h-4 w-4 text-emerald-500" />
                             Admin Panel
                           </Link>
                         )}
@@ -176,7 +176,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="hidden items-center gap-3 lg:flex">
                 <Link href="/login" className={`text-sm font-semibold transition-colors hover:text-primary-500 ${textColor}`}>Login</Link>
                 <Link href="/register" className="btn-primary">
                   Get Started
@@ -187,58 +187,152 @@ export default function Navbar() {
 
           {/* Mobile Hamburger */}
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
+            onClick={() => setMobileOpen(true)}
             className={`rounded-xl p-2.5 transition-colors hover:bg-black/5 lg:hidden ${textColor}`}
-            aria-label="Toggle menu"
+            aria-label="Open menu"
           >
-            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <Menu className="h-6 w-6" />
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="absolute left-0 right-0 top-20 border-t border-gray-100 bg-white shadow-2xl lg:hidden"
-          >
-            <div className="container py-6 space-y-2">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-[60] bg-gray-900/40 backdrop-blur-sm lg:hidden"
+            />
+            
+            {/* Sidebar Content */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed right-0 top-0 z-[70] h-full w-[280px] bg-white shadow-2xl p-0 lg:hidden flex flex-col"
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-50 bg-gray-50/50">
+                <Logo variant="dark" className="scale-75 origin-left" />
+                <button 
                   onClick={() => setMobileOpen(false)}
-                  className={`block rounded-xl px-4 py-3.5 text-sm font-bold tracking-tight transition-colors ${pathname === link.href ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className="p-2 rounded-xl bg-white border border-gray-100 text-gray-500 shadow-sm transition-transform active:scale-90"
                 >
-                  {link.label}
-                </Link>
-              ))}
-              <div className="border-t border-gray-100 pt-4 mt-4 space-y-3">
-                {user ? (
-                  <>
-                    {(profile?.is_lifetime_member || profile?.role === 'admin') && (
-                      <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 bg-gray-50">
-                        <LayoutDashboard className="h-5 w-5 text-primary-500" />
-                        Go to Dashboard
-                      </Link>
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              {/* User Bio (Conditional) */}
+              {user && (
+                <div className="p-6 bg-gradient-to-br from-primary-50 to-white border-b border-gray-50">
+                  <div className="flex items-center gap-4">
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="" className="h-12 w-12 rounded-2xl object-cover ring-4 ring-white shadow-lg" />
+                    ) : (
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-500 text-white text-sm font-black shadow-lg shadow-primary-500/20">
+                        {getInitials(profile?.full_name || user.email || 'U')}
+                      </div>
                     )}
-                    <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-red-600 hover:bg-red-50">
-                      <LogOut className="h-5 w-5" />
-                      Sign Out
-                    </button>
-                  </>
-                ) : (
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-gray-900 truncate">
+                        {profile?.full_name || 'My Account'}
+                      </p>
+                      <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest">
+                        {profile?.role || 'Intern'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Navigation Links */}
+              <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+                <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Navigation</p>
+                {NAV_LINKS.map((link) => {
+                  const Icon = link.icon;
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
+                        isActive 
+                          ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' 
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-gray-400'}`} />
+                      {link.label}
+                    </Link>
+                  );
+                })}
+
+                {user && (
                   <>
-                    <Link href="/login" onClick={() => setMobileOpen(false)} className="block text-center rounded-xl px-4 py-3.5 text-sm font-bold text-gray-900 hover:bg-gray-50">Login</Link>
-                    <Link href="/register" onClick={() => setMobileOpen(false)} className="btn-primary w-full shadow-lg shadow-primary-500/20">Get Started Now</Link>
+                    <div className="my-4 mx-4 border-t border-gray-100" />
+                    <p className="px-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Portal</p>
+                    <Link 
+                      href="/dashboard" 
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
+                        pathname === '/dashboard' ? 'bg-primary-500 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <LayoutDashboard className="h-5 w-5" />
+                      Dashboard
+                    </Link>
+                    <Link 
+                      href="/profile" 
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-4 rounded-2xl px-4 py-3.5 text-sm font-bold tracking-tight transition-all active:scale-95 ${
+                        pathname === '/profile' ? 'bg-primary-500 text-white shadow-lg' : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <User className="h-5 w-5" />
+                      My Profile
+                    </Link>
                   </>
                 )}
               </div>
-            </div>
-          </motion.div>
+
+              {/* Action Area */}
+              <div className="p-6 border-t border-gray-100 bg-gray-50/30">
+                {!user ? (
+                  <div className="space-y-3">
+                    <Link 
+                      href="/login" 
+                      onClick={() => setMobileOpen(false)}
+                      className="flex h-12 w-full items-center justify-center rounded-2xl text-sm font-bold text-gray-900 bg-white border border-gray-200 shadow-sm"
+                    >
+                      Sign In
+                    </Link>
+                    <Link 
+                      href="/register" 
+                      onClick={() => setMobileOpen(false)}
+                      className="btn-primary w-full h-12"
+                    >
+                      Get Started <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
+                ) : (
+                  <button 
+                    onClick={handleSignOut}
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-2xl text-sm font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    Sign Out
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </nav>

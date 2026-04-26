@@ -1,5 +1,6 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { addDays } from 'date-fns';
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: proofId } = await params;
@@ -21,7 +22,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'Invalid action.' }, { status: 400 });
   }
 
-  // Fetch the proof record
   const { data: proofRaw, error: fetchErr } = await (adminClient.from('payment_proofs') as any)
     .select('*')
     .eq('id', proofId)
@@ -39,91 +39,89 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .update({ status: 'approved', reviewed_by: user.id, reviewed_at: new Date().toISOString() })
       .eq('id', proofId);
 
-    // 2. Set is_lifetime_member = true on the user's profile
-    const { error: profileErr } = await (adminClient.from('profiles') as any)
+    // 2. Set is_lifetime_member = true (Legacy support, but primarily for dashboard access)
+    await (adminClient.from('profiles') as any)
       .update({ is_lifetime_member: true })
       .eq('id', proof.user_id);
 
-    if (profileErr) {
-      console.error('Failed to set is_lifetime_member:', profileErr);
-      return NextResponse.json({ error: 'Failed to activate dashboard access.' }, { status: 500 });
-    }
-
-    // 3. AUTO-ENROLLMENT: Find the latest pending application and approve it
-    const { data: latestAppRaw } = await adminClient
+    // 3. COMPLETE ENROLLMENT: Find the latest ACCEPTED application 
+    const { data: applicationRaw } = await adminClient
       .from('applications')
       .select('*, internship:internships(*)')
       .eq('user_id', proof.user_id)
-      .eq('status', 'pending')
+      .eq('status', 'accepted')
       .order('applied_at', { ascending: false })
       .limit(1)
       .single();
 
-    if (latestAppRaw) {
-      const app = latestAppRaw as any;
-      const internship = app.internship;
-      
-      // Approve application
-      await (adminClient.from('applications') as any)
-        .update({ status: 'accepted', reviewed_at: new Date().toISOString(), reviewed_by: user.id })
-        .eq('id', app.id);
+    if (applicationRaw) {
+        const app = applicationRaw as any;
+        const internship = app.internship;
+        
+        // Ensure we don't duplicate enrollments for the same application
+        const { data: existingEnrollment } = await adminClient
+            .from('enrollments')
+            .select('id')
+            .eq('application_id', app.id)
+            .maybeSingle();
 
-      // Create enrollment
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(startDate.getDate() + (internship.duration_weeks * 7));
+        if (!existingEnrollment) {
+            const startDate = new Date();
+            const endDate = addDays(startDate, internship.duration_weeks * 7);
 
-      const { data: enrollment, error: enrollErr } = await (adminClient.from('enrollments') as any)
-        .insert({
-          user_id: proof.user_id,
-          application_id: app.id,
-          internship_id: internship.id,
-          start_date: startDate.toISOString().split('T')[0],
-          end_date: endDate.toISOString().split('T')[0],
-        })
-        .select()
-        .single();
+            const { data: enrollment, error: enrollErr } = await (adminClient.from('enrollments') as any)
+                .insert({
+                    user_id: proof.user_id,
+                    application_id: app.id,
+                    internship_id: internship.id,
+                    start_date: startDate.toISOString().split('T')[0],
+                    end_date: endDate.toISOString().split('T')[0],
+                    status: 'active'
+                })
+                .select()
+                .single();
 
-      if (enrollment && !enrollErr) {
-        // Create project submissions
-        const { data: projects } = await adminClient
-          .from('internship_projects')
-          .select('id')
-          .eq('internship_id', internship.id);
+            if (enrollment && !enrollErr) {
+                // Initialize projects
+                const { data: projects } = await adminClient
+                    .from('internship_projects')
+                    .select('id')
+                    .eq('internship_id', internship.id);
 
-        if (projects && projects.length > 0) {
-          await (adminClient.from('project_submissions') as any).insert(
-            projects.map((p: any) => ({
-              enrollment_id: enrollment.id,
-              project_id: p.id,
-              user_id: proof.user_id,
-              status: 'in_progress',
-              attempt_number: 1,
-            }))
-          );
+                if (projects && projects.length > 0) {
+                    await (adminClient.from('project_submissions') as any).insert(
+                        projects.map((p: any) => ({
+                            enrollment_id: enrollment.id,
+                            project_id: p.id,
+                            user_id: proof.user_id,
+                            status: 'in_progress',
+                            attempt_number: 1,
+                        }))
+                    );
+                }
+
+                // Increment internship capacity
+                await (adminClient.from('internships') as any)
+                    .update({ spots_filled: (internship.spots_filled || 0) + 1 })
+                    .eq('id', internship.id);
+            }
         }
-
-        // Update spots filled
-        await (adminClient.from('internships') as any)
-          .update({ spots_filled: (internship.spots_filled || 0) + 1 })
-          .eq('id', internship.id);
-      }
     }
 
-    // 4. Send in-app notification to user
+    // 4. Send approval notification
     await (adminClient.from('notifications') as any).insert({
       user_id: proof.user_id,
       type: 'payment_approved',
-      title: '✅ Payment Approved — Welcome to AHWTECHNOLOGIES!',
-      body: `Your PKR 300 community fee has been verified. Your dashboard and the "${(latestAppRaw as any)?.internship?.title || 'internship'}" enrollment are now active!`,
-      link: '/dashboard',
+      title: '✅ Enrollment Complete!',
+      body: `Your payment has been verified. You now have full access to your projects and dashboard!`,
+      link: '/my-internship',
       is_read: false,
     });
 
-    return NextResponse.json({ success: true, message: 'Payment approved. User has lifetime dashboard access.' });
+    return NextResponse.json({ success: true, message: 'Payment approved. Enrollment activated.' });
 
   } else {
-    // Reject
+    // REJECT Payment Logic
     await (adminClient.from('payment_proofs') as any)
       .update({
         status: 'rejected',
@@ -136,12 +134,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await (adminClient.from('notifications') as any).insert({
       user_id: proof.user_id,
       type: 'payment_rejected',
-      title: '❌ Payment Proof Rejected',
-      body: `Your payment proof was rejected. Reason: ${rejection_reason || 'Invalid or unclear screenshot.'}. Please re-submit with a clear screenshot showing PKR 300, date, and transaction ID.`,
+      title: '❌ Payment Verification Failed',
+      body: `Oops! We couldn't verify your payment proof. Reason: ${rejection_reason || 'Screenshot unclear'}. Please visit the payment page to try again.`,
       link: '/enroll',
       is_read: false,
     });
 
-    return NextResponse.json({ success: true, message: 'Payment rejected. User notified.' });
+    return NextResponse.json({ success: true, message: 'Payment rejected. Student notified.' });
   }
 }

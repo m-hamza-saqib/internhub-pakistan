@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'FAQ — Frequently Asked Questions',
-  description: 'Got questions about AHWTECHNOLOGIES? Find answers about the application process, payment, certificates, and more.',
+  description: 'Got questions about AWH TECH? Find answers about the application process, payment, certificates, and more.',
 };
 
 export default function FAQPage() {
@@ -22,7 +22,7 @@ export default function FAQPage() {
             Frequently <span className="italic opacity-80">Asked</span>
           </h1>
           <p className="text-blue-100/80 text-lg font-medium leading-relaxed max-w-2xl mx-auto">
-            Everything you need to know about AHWTECHNOLOGIES. 
+            Everything you need to know about AWH TECH. 
             Can't find your answer? <a href="/contact" className="text-white underline underline-offset-4 decoration-primary-400 hover:text-primary-300 transition-colors">Contact us</a>.
           </p>
         </div>

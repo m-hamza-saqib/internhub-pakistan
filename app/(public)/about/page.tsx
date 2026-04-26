@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'About Us — AHWTECHNOLOGIES',
-  description: 'Learn about AHWTECHNOLOGIES — our mission to empower Pakistani students with free internships and lifetime dashboard access.',
+  title: 'About Us — AWH TECH',
+  description: 'Learn about AWH TECH — our mission to empower Pakistani students with free internships and lifetime dashboard access.',
 };
 
 export default function AboutPage() {
@@ -31,7 +31,7 @@ export default function AboutPage() {
             The Future of <span className="italic opacity-80">Skill Building</span>
           </h1>
           <p className="text-blue-100/80 text-lg md:text-xl font-medium leading-relaxed max-w-3xl mx-auto">
-            AHWTECHNOLOGIES is built on a simple promise: <strong className="text-white">Professional growth should be accessible to everyone.</strong> 
+            AWH TECH is built on a simple promise: <strong className="text-white">Professional growth should be accessible to everyone.</strong> 
             We provide structured, free remote internships for Pakistani students with a focus on real-world impact.
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function AboutPage() {
               </h2>
               <p className="text-gray-600 leading-relaxed mb-6 font-medium">
                 Employers want experience, but students can&apos;t get experience without a job. 
-                AHWTECHNOLOGIES breaks this cycle by providing structured, verified, remote internship programs that allow you to build a professional portfolio while you study.
+                AWH TECH breaks this cycle by providing structured, verified, remote internship programs that allow you to build a professional portfolio while you study.
               </p>
               <div className="rounded-2xl border-2 border-emerald-500/10 bg-emerald-500/5 p-6 mb-6">
                 <p className="text-sm font-bold text-emerald-800 mb-2 flex items-center gap-2">
@@ -115,7 +115,7 @@ export default function AboutPage() {
           <h2 className="text-4xl font-bold text-white mb-4">Start Your Career Journey</h2>
           <p className="text-blue-100 mb-8 max-w-lg mx-auto">
             One-time PKR 300 fee. Lifetime access. 100% remote internships. 
-            Join AHWTECHNOLOGIES today and build your future.
+            Join AWH TECH today and build your future.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register" className="btn-primary px-10 py-4 text-base">

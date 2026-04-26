@@ -46,9 +46,9 @@ export default function ApplicationModal({ internshipId, internshipTitle, onClos
         return;
       }
 
-      toast.success('Application submitted! Redirecting to enrollment fee page...');
+      toast.success('Application submitted successfully! Our team will review your profile soon.');
       setTimeout(() => {
-        window.location.href = `/enroll?internship=${encodeURIComponent(internshipTitle)}`;
+        window.location.href = `/my-internship`;
       }, 1500);
     } catch {
       toast.error('Something went wrong. Please try again.');

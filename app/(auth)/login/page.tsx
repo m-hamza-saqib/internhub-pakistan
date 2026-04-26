@@ -71,14 +71,72 @@ export default function LoginPage() {
           <h1 className="font-instrument-serif text-4xl text-gray-900 tracking-tight">
             Welcome <span className="italic opacity-80">Back</span>
           </h1>
-          <p className="text-sm font-medium text-gray-500 mt-2">Resume your journey at AHWTECHNOLOGIES</p>
+          <p className="text-sm font-medium text-gray-500 mt-2">Resume your journey at AWH TECH</p>
+        </div>
+
+        <div className="mb-8">
+            <div className="relative mb-8">
+                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+                <div className="relative flex justify-center text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]"><span className="bg-white px-4 uppercase tracking-[.2em]">Standard Gateway</span></div>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Email */}
+            <div>
+                <label htmlFor="email" className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Email Address</label>
+                <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-primary-500 transition-colors" />
+                <input
+                    id="email"
+                    type="email"
+                    {...register('email')}
+                    placeholder="you@email.com"
+                    className={`w-full rounded-xl border border-gray-200 bg-gray-50/50 py-4 pl-12 pr-4 text-sm font-medium outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10 ${errors.email ? 'border-red-200 bg-red-50/30' : ''}`}
+                    autoComplete="email"
+                />
+                </div>
+                {errors.email && <p className="text-[11px] font-bold text-red-500 mt-2 px-1 flex items-center gap-1.5"><AlertCircle className="h-3.5 w-3.5"/>{errors.email.message}</p>}
+            </div>
+
+            {/* Password */}
+            <div>
+                <div className="flex items-center justify-between mb-2 px-1">
+                <label htmlFor="password" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
+                <Link href="/forgot-password" title="RESET PASSWORD" className="text-[11px] font-bold text-primary-500 hover:text-primary-600">RESET PASSWORD</Link>
+                </div>
+                <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-primary-500 transition-colors" />
+                <input
+                    id="password"
+                    type={showPass ? 'text' : 'password'}
+                    {...register('password')}
+                    placeholder="Your secret passphrase"
+                    className={`w-full rounded-xl border border-gray-200 bg-gray-50/50 py-4 pl-12 pr-12 text-sm font-medium outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-4 focus:ring-primary-500/10 ${errors.password ? 'border-red-200 bg-red-50/30' : ''}`}
+                    autoComplete="current-password"
+                />
+                <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors">
+                    {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+                </div>
+                {errors.password && <p className="text-[11px] font-bold text-red-500 mt-2 px-1 flex items-center gap-1.5"><AlertCircle className="h-3.5 w-3.5"/>{errors.password.message}</p>}
+            </div>
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-base shadow-xl shadow-primary-500/20 active:scale-[0.98]">
+                {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Verifying...</> : 'Sign In To Account'}
+            </button>
+            </form>
+        </div>
+
+        <div className="relative mb-8">
+          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
+          <div className="relative flex justify-center text-[10px] font-bold text-gray-400 uppercase tracking-[0.3em]"><span className="bg-white/80 backdrop-blur-sm px-4">Social Connect</span></div>
         </div>
 
         {/* Google OAuth */}
         <button
           onClick={handleGoogleLogin}
           disabled={googleLoading}
-          className="group relative w-full flex items-center justify-center gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-4 text-sm font-black text-gray-900 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-200 hover:shadow-md active:scale-[0.98] disabled:opacity-50 mb-8"
+          className="group relative w-full flex items-center justify-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4 text-sm font-black text-gray-900 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-200 hover:shadow-md active:scale-[0.98] disabled:opacity-50"
         >
           {googleLoading ? <Loader2 className="h-5 w-5 animate-spin text-primary-500" /> : (
             <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -90,57 +148,6 @@ export default function LoginPage() {
           )}
           <span>Continue with Google</span>
         </button>
-
-        <div className="relative mb-8">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-100" /></div>
-          <div className="relative flex justify-center text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]"><span className="bg-white/80 backdrop-blur-sm px-4">Standard Gateway</span></div>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">Email Address</label>
-            <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-primary-500 transition-colors" />
-              <input
-                id="email"
-                type="email"
-                {...register('email')}
-                placeholder="you@email.com"
-                className={`w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-4 text-sm font-medium outline-none ring-primary-500/10 transition-all focus:border-primary-500 focus:bg-white focus:ring-4 ${errors.email ? 'border-red-200 bg-red-50/30' : ''}`}
-                autoComplete="email"
-              />
-            </div>
-            {errors.email && <p className="text-[11px] font-bold text-red-500 mt-2 px-1 flex items-center gap-1.5"><AlertCircle className="h-3.5 w-3.5"/>{errors.email.message}</p>}
-          </div>
-
-          {/* Password */}
-          <div>
-            <div className="flex items-center justify-between mb-2 px-1">
-              <label htmlFor="password" className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Password</label>
-              <Link href="/forgot-password" className="text-[11px] font-bold text-primary-500 hover:text-primary-600">RESET PASSWORD</Link>
-            </div>
-            <div className="relative group">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-300 group-focus-within:text-primary-500 transition-colors" />
-              <input
-                id="password"
-                type={showPass ? 'text' : 'password'}
-                {...register('password')}
-                placeholder="Your secret passphrase"
-                className={`w-full rounded-xl border border-gray-100 bg-gray-50/50 py-4 pl-12 pr-12 text-sm font-medium outline-none ring-primary-500/10 transition-all focus:border-primary-500 focus:bg-white focus:ring-4 ${errors.password ? 'border-red-200 bg-red-50/30' : ''}`}
-                autoComplete="current-password"
-              />
-              <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors">
-                {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-              </button>
-            </div>
-            {errors.password && <p className="text-[11px] font-bold text-red-500 mt-2 px-1 flex items-center gap-1.5"><AlertCircle className="h-3.5 w-3.5"/>{errors.password.message}</p>}
-          </div>
-
-          <button type="submit" disabled={loading} className="btn-primary w-full py-4 text-base shadow-xl shadow-primary-500/20 active:scale-[0.98]">
-            {loading ? <><Loader2 className="h-5 w-5 animate-spin" /> Verifying Credentials...</> : 'Sign In To Account'}
-          </button>
-        </form>
 
         <p className="text-center text-sm font-medium text-gray-500 mt-10">
           New here?{' '}

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Image, Font } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Font } from '@react-pdf/renderer';
 
-// Register fonts if needed, or use defaults
 const styles = StyleSheet.create({
   page: {
     padding: 60,
@@ -15,14 +14,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 40,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomWidth: 2,
+    borderBottomColor: '#0f172a',
     paddingBottom: 20,
   },
   brand: {
-    color: '#3b82f6',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: '#0f172a',
+    fontSize: 22,
+    fontWeight: 'heavy',
+    letterSpacing: -1,
   },
   title: {
     fontSize: 24,
@@ -90,22 +90,22 @@ export const OfferLetterTemplate = ({
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.header}>
-        <Text style={styles.brand}>AHWTECHNOLOGIES</Text>
-        <Text style={{ color: '#94a3b8' }}>ID: IH-OFFER-{Math.random().toString(36).substr(2, 9).toUpperCase()}</Text>
+        <Text style={styles.brand}>AWH TECH</Text>
+        <Text style={{ color: '#94a3b8', fontSize: 8 }}>ID: AWH-OFFER-{Math.random().toString(36).substr(2, 6).toUpperCase()}</Text>
       </View>
 
       <View style={{ marginBottom: 30 }}>
         <Text style={{ color: '#64748b' }}>Date: {dateIssued}</Text>
       </View>
 
-      <Text style={styles.title}>Letter of Internship Offer</Text>
+      <Text style={styles.title}>Internship Selection Offer</Text>
 
       <View style={styles.body}>
         <Text style={{ marginBottom: 15 }}>Dear {internName},</Text>
         
         <Text style={{ marginBottom: 15 }}>
-          We are pleased to offer you a remote internship position as a <Text style={{ fontWeight: 'bold' }}>{internshipTitle}</Text> at AHWTECHNOLOGIES. 
-          Your application stood out among many candidates, and we are excited to have your talent contributing to our community.
+          Congratulations! We are pleased to offer you a remote internship position as a <Text style={{ fontWeight: 'bold' }}>{internshipTitle}</Text> at AWH TECH. 
+          Your skills and application stood out, and we are excited to have you join our innovative technical community.
         </Text>
 
         <View style={{ flexDirection: 'row', gap: 40, marginTop: 10, marginBottom: 20 }}>
@@ -119,28 +119,29 @@ export const OfferLetterTemplate = ({
           </View>
         </View>
 
-        <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>Terms and Conditions:</Text>
-        <View style={{ marginLeft: 10 }}>
-          <Text>• Role: Remote Intern (Unpaid)</Text>
+        <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>Terms of Engagement:</Text>
+        <View style={{ marginLeft: 10, fontSize: 10 }}>
+          <Text>• Role: Remote Technical Intern</Text>
+          <Text>• Compensation: Educational Experience (Unpaid)</Text>
           <Text>• Working Hours: Flexible (Expected 15-20 hours/week)</Text>
-          <Text>• Deliverables: Successful completion of all assigned projects.</Text>
-          <Text>• Certificate: Awarded upon successful completion and verification.</Text>
+          <Text>• Deliverables: Successful completion of required industry projects.</Text>
+          <Text>• Certification: Official verified certificate issued upon completion.</Text>
         </View>
 
         <Text style={{ marginTop: 20 }}>
-          During this internship, you will have the opportunity to work on industry-relevant projects, receive feedback from experienced mentors, 
-          and build a professional portfolio that will serve you throughout your career.
+          At AWH TECH, we are dedicated to "Building solutions delivering excellence." We hope this internship provides 
+          you with invaluable experience and the practical skills needed to excel in your professional career.
         </Text>
       </View>
 
       <View style={styles.signature}>
         <Text style={{ fontWeight: 'bold', color: '#0f172a' }}>Director of Programs</Text>
-        <Text style={{ color: '#64748b' }}>AHWTECHNOLOGIES</Text>
+        <Text style={{ color: '#64748b' }}>AWH TECH</Text>
       </View>
 
       <Text style={styles.footer}>
-        AHWTECHNOLOGIES — Bridging the Gap Between Education and Employment.
-        Verify this document at ahwtechnologies.com/verify
+        AWH TECH — Building solutions delivering excellence.
+        Official Verification: awhtech.com/verify
       </Text>
     </Page>
   </Document>

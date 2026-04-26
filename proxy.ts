@@ -34,9 +34,10 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Define route types
+  // Define route groups
   const dashboardRoutes = ['/dashboard', '/applications', '/my-internship', '/projects', '/certificates', '/profile', '/settings'];
-  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/auth/callback'];
+  
   const isAdminRoute = pathname.startsWith('/admin');
   const isDashboardRoute = dashboardRoutes.some(r => pathname.startsWith(r));
   const isAuthRoute = authRoutes.some(r => pathname.startsWith(r));
@@ -48,7 +49,6 @@ export async function proxy(request: NextRequest) {
 
   try {
     // 2. GET USER with timeout protection
-    // We use a promise wrapper to ensure a network hang doesn't block the whole proxy
     const { data: { user } } = await Promise.race([
       supabase.auth.getUser(),
       new Promise<{ data: { user: null } }>((_, reject) => 
@@ -57,38 +57,51 @@ export async function proxy(request: NextRequest) {
     ]);
 
     // 3. LOGIC FOR AUTH PAGES (Login/Register)
-    if (user && isAuthRoute) {
-      return NextResponse.redirect(new URL('/', request.url));
+    if (user && isAuthRoute && !pathname.startsWith('/auth/callback')) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     if (!user && (isDashboardRoute || isAdminRoute)) {
       return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // 4. ENROLLMENT & ADMIN CHECK
+    // 4. ROLE & ACCESSIBILITY CHECK
     if (user && (isDashboardRoute || isAdminRoute)) {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_lifetime_member, role')
+        .select('role, is_lifetime_member')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      // Admin logic
+      // Admin verification
       if (isAdminRoute && profile?.role !== 'admin') {
-        return NextResponse.redirect(new URL('/', request.url));
+        return NextResponse.redirect(new URL('/dashboard', request.url));
       }
 
-      // Enrollment Lock for High-Value Routes
-      const protectedDashboardRoutes = ['/dashboard', '/projects', '/certificates', '/my-internship'];
-      const isProtectedDashboardRoute = protectedDashboardRoutes.some(r => pathname.startsWith(r));
+      // SELECTIVE GATING: 
+      // All dashbaord pages are now UNLOCKED by default so users can see their selection status.
+      // High-value technical assets (/projects, /certificates) still check if the user is an active participant.
+      // (The dashboard pages themselves will show a 'Lock' UI if no active enrollment exists).
+      
+      const premiumRoutes = ['/projects', '/certificates'];
+      const isPremiumRoute = premiumRoutes.some(r => pathname.startsWith(r));
 
-      if (isProtectedDashboardRoute && profile?.role !== 'admin' && !profile?.is_lifetime_member) {
-        return NextResponse.redirect(new URL('/enroll', request.url));
+      if (isPremiumRoute && profile?.role !== 'admin' && !profile?.is_lifetime_member) {
+        // Find if they have ANY active enrollment if lifetime is false
+        const { data: activeEnrollment } = await supabase
+          .from('enrollments')
+          .select('id')
+          .eq('user_id', user.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (!activeEnrollment) {
+          return NextResponse.redirect(new URL('/my-internship', request.url));
+        }
       }
     }
   } catch (err: any) {
     console.error('Proxy Error Handle:', err.message);
-    // If it's a timeout and we're in dev, let the request through to see the actual page error
     if (process.env.NODE_ENV === 'development' && err.message === 'Auth Timeout') {
       return supabaseResponse;
     }

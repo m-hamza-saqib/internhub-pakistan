@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { certificateId } = await params;
   return {
     title: `Certificate Verification — ${certificateId}`,
-    description: 'Verify the authenticity of an AHWTECHNOLOGIES certificate.',
+    description: 'Verify the authenticity of an AWH TECH certificate.',
     robots: { index: true, follow: true },
   };
 }
@@ -39,7 +39,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
           <p className="text-gray-500 text-sm">
             The certificate ID <strong>{certificateId}</strong> is not valid or does not exist in our system.
           </p>
-          <Link href="/" className="btn-primary mt-6 inline-flex">Go to AHWTECHNOLOGIES</Link>
+          <Link href="/" className="btn-primary mt-6 inline-flex">Go to AWH TECH</Link>
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
                  <span className="text-sm font-black text-white italic">IH</span>
                </div>
                <div className="text-center">
-                 <div className="font-black text-gray-900 text-xl tracking-tight uppercase">AHWTECHNOLOGIES</div>
+                 <div className="font-black text-gray-900 text-xl tracking-tight uppercase">AWH TECH</div>
                  <div className="text-[10px] font-black text-primary-500 uppercase tracking-[0.3em]">Official Verification Portal</div>
                </div>
             </div>
@@ -153,7 +153,7 @@ export default async function CertificateVerificationPage({ params }: Props) {
 
         <div className="text-center space-y-4">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-relaxed max-w-md mx-auto">
-            This digital record is protected by AHWTECHNOLOGIES verification protocol. 
+            This digital record is protected by AWH TECH verification protocol. 
             Unauthorized duplication or tampering is strictly prohibited.
           </p>
           <div className="h-8 w-px bg-gray-200 mx-auto" />

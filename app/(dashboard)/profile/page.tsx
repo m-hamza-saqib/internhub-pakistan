@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import ProfileForm from '@/components/forms/ProfileForm';
 
 export const metadata = {
-  title: 'Edit Profile — AHWTECHNOLOGIES',
+  title: 'Edit Profile — AWH TECH',
 };
 
 export default async function ProfilePage() {

@@ -20,35 +20,35 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AHWTECHNOLOGIES — Remote Internships with Verified Certificates',
-    template: '%s | AHWTECHNOLOGIES',
+    default: 'AWH TECH — Building solutions delivering excellence',
+    template: '%s | AWH TECH',
   },
   description:
-    "Pakistan's premier remote internship platform by AHWTECHNOLOGIES. Apply for verified internships, complete real projects, and earn internationally recognized certificates. PKR 300 only.",
+    "Building solutions delivering excellence with AWH TECH. Pakistan's premier remote internship platform. Apply for verified internships, complete real projects, and earn internationally recognized certificates.",
   keywords: [
-    'AHWTECHNOLOGIES',
+    'AWH TECH',
+    'AWH TECHNOLOGIES',
     'online internship Pakistan',
     'remote internship with certificate Pakistan',
     'free internship certificate online',
     'IT internship Pakistan',
-    'digital marketing internship Pakistan',
     'internship Lahore Karachi Islamabad',
   ],
-  authors: [{ name: 'AHWTECHNOLOGIES' }],
-  creator: 'AHWTECHNOLOGIES',
+  authors: [{ name: 'AWH TECH' }],
+  creator: 'AWH TECH',
   openGraph: {
     type: 'website',
     locale: 'en_PK',
     url: process.env.NEXT_PUBLIC_APP_URL,
-    siteName: 'AHWTECHNOLOGIES',
-    title: 'AHWTECHNOLOGIES — Remote Internships with Verified Certificates',
+    siteName: 'AWH TECH',
+    title: 'AWH TECH — Building solutions delivering excellence',
     description:
       "Pakistan's premier remote internship platform. Get certified. Get hired.",
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AHWTECHNOLOGIES',
-    description: "Pakistan's premier remote internship platform.",
+    title: 'AWH TECH',
+    description: "Building solutions delivering excellence with AWH TECH.",
   },
   robots: {
     index: true,
