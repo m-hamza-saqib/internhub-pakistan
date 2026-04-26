@@ -34,15 +34,22 @@ export default async function OfferLetterPage(
 
   const { data: applicationRaw } = await supabase
     .from('applications')
-    .select(`
-      *,
-      profiles!applications_user_id_fkey(*),
-      internships(*)
-    `)
+    .select('*, internships(*)')
     .eq('id', id)
     .single();
 
+  if (!applicationRaw) notFound();
+
   const application = applicationRaw as any;
+
+  // Fetch profile separately
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', application.user_id)
+    .single();
+
+  application.profiles = profile;
 
   if (!application || application.status !== 'accepted') {
     notFound();

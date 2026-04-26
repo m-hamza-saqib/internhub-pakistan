@@ -27,16 +27,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Title and body are required.' }, { status: 400 });
   }
 
-  // Get all intern user IDs
-  const { data: interns } = await (adminClient.from('profiles') as any).select('id').eq('role', 'intern');
+  // Get ALL registered users except the current admin
+  const { data: allUsers } = await (adminClient.from('profiles') as any)
+    .select('id')
+    .neq('id', user.id); // Exclude the admin sending the announcement
 
-  if (!interns || interns.length === 0) {
+  if (!allUsers || allUsers.length === 0) {
     return NextResponse.json({ success: true, sent: 0 });
   }
 
-  // Bulk insert notifications for all interns
-  const notifications = interns.map((intern: any) => ({
-    user_id: intern.id,
+  // Bulk insert notifications for all users
+  const notifications = allUsers.map((recipient: any) => ({
+    user_id: recipient.id,
     type,
     title: title.trim(),
     body: msgBody.trim(),
@@ -50,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, sent: interns.length });
+  return NextResponse.json({ success: true, sent: allUsers.length });
 }
 
 // GET - List recent announcements (notifications of type 'announcement')
