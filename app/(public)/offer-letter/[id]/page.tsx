@@ -55,7 +55,7 @@ export default async function OfferLetterPage(
     notFound();
   }
 
-  const profile = application.profiles as any;
+  // Use the profile fetched above
   const internship = application.internships as any;
   const issueDate = application.reviewed_at || application.applied_at;
 
