@@ -145,10 +145,14 @@ export default function Navbar() {
                         className="absolute right-0 mt-3 w-64 origin-top-right rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl"
                         onMouseLeave={() => setDropdownOpen(false)}
                       >
-                        <div className="px-4 py-3 mb-2 border-b border-gray-50">
-                          <p className="text-sm font-bold text-gray-900 truncate">{profile?.full_name || 'My Account'}</p>
+                        <Link
+                          href="/dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-3 mb-2 border-b border-gray-50 rounded-xl hover:bg-gray-50 transition-colors group"
+                        >
+                          <p className="text-sm font-bold text-gray-900 truncate group-hover:text-primary-600 transition-colors">{profile?.full_name || 'My Account'}</p>
                           <p className="text-[10px] font-medium text-gray-400 truncate uppercase tracking-widest">{profile?.role || 'Intern'}</p>
-                        </div>
+                        </Link>
                         
                         <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors" onClick={() => setDropdownOpen(false)}>
                           <LayoutDashboard className="h-4 w-4 text-primary-500" />
@@ -227,9 +231,13 @@ export default function Navbar() {
                 </button>
               </div>
 
-              {/* User Bio (Conditional) */}
+              {/* User Bio (Conditional) — clicking goes to dashboard */}
               {user && (
-                <div className="p-6 bg-gradient-to-br from-primary-50 to-white border-b border-gray-50">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className="block p-6 bg-gradient-to-br from-primary-50 to-white border-b border-gray-50 hover:from-primary-100 transition-colors"
+                >
                   <div className="flex items-center gap-4">
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="" className="h-12 w-12 rounded-2xl object-cover ring-4 ring-white shadow-lg" />
@@ -243,11 +251,11 @@ export default function Navbar() {
                         {profile?.full_name || 'My Account'}
                       </p>
                       <p className="text-[10px] font-bold text-primary-500 uppercase tracking-widest">
-                        {profile?.role || 'Intern'}
+                        {profile?.role || 'Intern'} · Tap to open dashboard
                       </p>
                     </div>
                   </div>
-                </div>
+                </Link>
               )}
 
               {/* Navigation Links */}

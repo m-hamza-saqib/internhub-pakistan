@@ -211,7 +211,7 @@ export default async function MyInternshipPage() {
           </div>
 
           {/* Step 3: Community Fee */}
-          <div className="card p-5 border-l-4 border-l-secondary-500 flex items-center justify-between gap-4 opacity-50">
+          <div className="card p-5 border-l-4 border-l-secondary-500 flex items-center justify-between gap-4">
              <div className="flex items-center gap-4">
               <div className="h-10 w-10 rounded-xl bg-secondary-50 text-secondary-600 flex items-center justify-center font-bold">3</div>
               <div>
