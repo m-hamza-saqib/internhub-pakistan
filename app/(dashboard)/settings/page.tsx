@@ -122,9 +122,36 @@ export default function SettingsPage() {
                   Deleting your account will permanently remove all your progress, certificates, and application history. This action cannot be undone.
                 </div>
               </div>
-              <button className="btn-secondary border-red-200 text-red-600 hover:bg-red-50 py-2.5 px-6 text-sm font-bold">
-                Delete My Account Permanently
-              </button>
+              
+              <div className="pt-2">
+                <button 
+                  onClick={async () => {
+                    if (confirm('Are you absolutely sure? This will PERMANENTLY delete your account and all associated data. There is no way to recover your progress or certificates.')) {
+                      setLoading(true);
+                      try {
+                        const res = await fetch('/api/user/delete', { method: 'POST' });
+                        if (res.ok) {
+                          toast.success('Account deleted. Redirecting...');
+                          await supabase.auth.signOut();
+                          window.location.href = '/';
+                        } else {
+                          const data = await res.json();
+                          toast.error(data.error || 'Failed to delete account');
+                        }
+                      } catch (err) {
+                        toast.error('An error occurred');
+                      } finally {
+                        setLoading(false);
+                      }
+                    }
+                  }}
+                  disabled={loading}
+                  className="btn-secondary border-red-200 text-red-600 hover:bg-red-50 py-2.5 px-6 text-sm font-bold flex items-center gap-2"
+                >
+                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                  Delete My Account Permanently
+                </button>
+              </div>
             </div>
           )}
         </main>

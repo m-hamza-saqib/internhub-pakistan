@@ -37,10 +37,10 @@ function StatCounter({ value, suffix, label }: { value: number; suffix: string; 
   const { count, ref } = useCounter(value);
   return (
     <div ref={ref} className="text-center">
-      <div className="text-4xl font-bold text-white md:text-5xl">
+      <div className="text-5xl font-black text-white tracking-tighter">
         {count.toLocaleString()}{suffix}
       </div>
-      <div className="mt-1 text-sm text-blue-200">{label}</div>
+      <div className="mt-2 text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em]">{label}</div>
     </div>
   );
 }
@@ -409,28 +409,38 @@ export default function HomePage() {
       </section>
 
       {/* ── STATS ── */}
-      <section className="bg-gray-900 py-32 section">
-        <div className="container">
-          <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+      <section className="bg-gray-950 py-32 relative overflow-hidden">
+        {/* Background Decorative Element */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="container relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { value: 1500, suffix: '+', label: 'Identity Holders', icon: '🎓' },
-              { value: 900, suffix: '+', label: 'Verified Credentials', icon: '📜' },
-              { value: 5.0, suffix: '/5', label: 'Satisfaction Quotient', icon: '⭐' },
-              { value: 50, suffix: '+', label: 'Hubs Reached', icon: '🌍' },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="text-3xl mb-4">{stat.icon}</div>
-                <div className="text-5xl font-black text-white tracking-tighter">{stat.value}{stat.suffix}</div>
-                <div className="text-[10px] font-black text-indigo-400 mt-2 uppercase tracking-[0.2em]">{stat.label}</div>
-              </motion.div>
-            ))}
+              { value: 1500, suffix: '+', label: 'Identity Holders', icon: Users, color: 'text-blue-400', bg: 'bg-blue-400/10' },
+              { value: 900, suffix: '+', label: 'Verified Credentials', icon: Award, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+              { value: 5, suffix: '/5', label: 'Satisfaction Quotient', icon: Star, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+              { value: 50, suffix: '+', label: 'Hubs Reached', icon: Globe, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.8, type: 'spring' }}
+                  className="relative group h-full"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl duration-500" />
+                  <div className="h-full flex flex-col items-center p-10 rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-white/10 shadow-2xl">
+                    <div className={cn("p-4 rounded-2xl mb-8 transition-transform group-hover:scale-110 duration-500", stat.bg, stat.color)}>
+                      <Icon size={32} strokeWidth={1.5} />
+                    </div>
+                    <StatCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>

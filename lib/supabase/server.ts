@@ -54,13 +54,13 @@ export async function createAdminClient() {
 export async function checkProfileCompletion(supabase: any, userId: string) {
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, phone, cnic, city, province, university, degree, graduation_year, cgpa')
+    .select('full_name, phone, cnic, city, university, degree_title, current_semester')
     .eq('id', userId)
     .single();
 
   if (!profile) return false;
 
-  const requiredFields = ['full_name', 'phone', 'cnic', 'city', 'province', 'university', 'degree', 'graduation_year', 'cgpa'];
+  const requiredFields = ['full_name', 'phone', 'cnic', 'city', 'university', 'degree_title', 'current_semester'];
   const missingFields = requiredFields.filter(f => !profile[f] && profile[f] !== 0);
 
   return missingFields.length === 0;
