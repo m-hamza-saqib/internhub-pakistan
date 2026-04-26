@@ -43,11 +43,11 @@ export default async function OfferLetterPage(
   const application = applicationRaw as any;
 
   // Fetch profile separately
-  const { data: profile } = await supabase
+  const { data: profile } = (await supabase
     .from('profiles')
     .select('*')
     .eq('id', application.user_id)
-    .single();
+    .single()) as any;
 
   application.profiles = profile;
 
