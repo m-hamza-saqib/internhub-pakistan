@@ -19,12 +19,30 @@ export default async function AdminUsersPage() {
   const adminProfile = profileRaw as { role: string } | null;
   if (!adminProfile || adminProfile.role !== 'admin') redirect('/dashboard');
 
-  const { data: users } = await supabase
-    .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const { createAdminClient } = await import('@/lib/supabase/server');
+  const adminSupabase = await createAdminClient();
 
-  const list = (users as Database['public']['Tables']['profiles']['Row'][]) || [];
+  const { data: authUsersRes } = await adminSupabase.auth.admin.listUsers();
+  const authUsers = authUsersRes.users || [];
+
+  const { data: profiles } = await adminSupabase
+    .from('profiles')
+    .select('*') as { data: Database['public']['Tables']['profiles']['Row'][] | null };
+
+  const list = authUsers.map((authUser) => {
+    const profile = profiles?.find((p) => p.id === authUser.id);
+    return {
+      id: authUser.id,
+      email: authUser.email,
+      full_name: profile?.full_name || authUser.user_metadata?.full_name || 'User',
+      university: profile?.university || null,
+      degree: profile?.degree || null,
+      city: profile?.city || null,
+      profile_completeness: profile?.profile_completeness || 0,
+      created_at: authUser.created_at,
+      is_suspended: profile?.is_suspended || false,
+    };
+  }).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <div className="space-y-6">

@@ -4,6 +4,8 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import Providers from '@/components/Providers';
 
+import NextTopLoader from 'nextjs-toploader';
+
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-plus-jakarta',
@@ -61,6 +63,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${plusJakarta.variable} ${instrumentSerif.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-white font-sans antialiased">
+        <NextTopLoader
+          color="#1C3B78"
+          initialPosition={0.08}
+          crawlSpeed={200}
+          height={3}
+          crawl={true}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          shadow="0 0 10px #1C3B78,0 0 5px #1C3B78"
+          zIndex={1600}
+        />
         <Providers>
           {children}
           <Toaster

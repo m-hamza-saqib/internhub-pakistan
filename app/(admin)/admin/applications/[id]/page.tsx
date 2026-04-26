@@ -24,23 +24,23 @@ export default function ApplicationReviewPage({ params }: { params: Promise<{ id
 
   useEffect(() => {
     async function fetchApplication() {
-      const { data, error } = await supabase
-        .from('applications')
-        .select(`
-          *,
-          applicant:profiles!applications_user_id_fkey (*),
-          internship:internship_id (*)
-        `)
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        toast.error('Failed to fetch application');
+      try {
+        const res = await fetch(`/api/admin/applications/${id}`);
+        const data = await res.json();
+        
+        if (!res.ok) {
+          throw new Error('Failed to load application');
+        }
+        
+        if (data) {
+          setApplication(data);
+        }
+      } catch (error) {
+        toast.error('Failed to fetch application data.');
         router.push('/admin/applications');
-      } else {
-        setApplication(data);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchApplication();
   }, [id, router, supabase]);

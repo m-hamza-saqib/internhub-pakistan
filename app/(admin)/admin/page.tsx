@@ -22,24 +22,25 @@ export default async function AdminDashboardPage() {
   const adminClient = await createAdminClient();
 
   const [
-    usersRes, activeEnrollRes, pendingAppsRes, allAppsRes,
+    authUsersRes, activeEnrollRes, pendingAppsRes, allAppsRes,
     certificatesRes, paymentsRes, recentAppsRes, submissionsRes,
   ] = (await Promise.all([
-    adminClient.from('profiles').select('id', { count: 'exact', head: true }),
+    adminClient.auth.admin.listUsers(),
     adminClient.from('enrollments').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     adminClient.from('applications').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     adminClient.from('applications').select('id', { count: 'exact', head: true }),
     adminClient.from('enrollments').select('id', { count: 'exact', head: true }).not('certificate_id', 'is', null),
     adminClient.from('payments').select('amount, currency, status').eq('status', 'completed'),
-    adminClient.from('applications').select('id, status, applied_at, profiles!applications_user_id_fkey(full_name, email), internships(title)').order('applied_at', { ascending: false }).limit(10),
+    adminClient.from('applications').select('id, user_id, status, applied_at, profiles!applications_user_id_fkey(full_name, email), internships(title)').order('applied_at', { ascending: false }).limit(10),
     adminClient.from('project_submissions').select('id', { count: 'exact', head: true }).eq('status', 'under_review'),
   ])) as any[];
 
-  const totalRevenuePKR = (paymentsRes.data as any[] || []).filter(p => p.currency === 'PKR').reduce((sum, p) => sum + p.amount, 0);
-  const totalRevenueUSD = (paymentsRes.data as any[] || []).filter(p => p.currency === 'USD').reduce((sum, p) => sum + p.amount, 0);
+  const totalUsersCount = authUsersRes.data?.users?.length || 0;
+  const totalRevenuePKR = (paymentsRes.data as any[] || []).filter((p: any) => p.currency === 'PKR').reduce((sum: number, p: any) => sum + p.amount, 0);
+  const totalRevenueUSD = (paymentsRes.data as any[] || []).filter((p: any) => p.currency === 'USD').reduce((sum: number, p: any) => sum + p.amount, 0);
 
   const KPI_CARDS = [
-    { label: 'Total Users',           value: usersRes.count || 0,        icon: Users,     color: 'bg-blue-50 text-blue-600',   trend: '+12%' },
+    { label: 'Total Users',           value: totalUsersCount,            icon: Users,     color: 'bg-blue-50 text-blue-600',   trend: '+12%' },
     { label: 'Active Interns',         value: activeEnrollRes.count || 0, icon: Briefcase, color: 'bg-green-50 text-green-600', trend: '+5%' },
     { label: 'Pending Applications',   value: pendingAppsRes.count || 0,  icon: Clock,     color: 'bg-yellow-50 text-yellow-600', trend: null },
     { label: 'Certificates Issued',    value: certificatesRes.count || 0, icon: Award,     color: 'bg-purple-50 text-purple-600', trend: '+8%' },
@@ -47,7 +48,23 @@ export default async function AdminDashboardPage() {
     { label: 'Revenue (PKR)',          value: `₨${totalRevenuePKR.toLocaleString()}`, icon: DollarSign, color: 'bg-emerald-50 text-emerald-600', trend: null, isText: true },
   ];
 
-  const recentApps = recentAppsRes.data || [];
+  const recentAppsData = recentAppsRes.data || [];
+  const authUsers = authUsersRes.data?.users || [];
+
+  const recentApps = recentAppsData.map((app: any) => {
+    let appUser = app.profiles;
+    if (!appUser) {
+      const authUser = authUsers.find((u: any) => u.id === app.user_id);
+      appUser = {
+        full_name: authUser?.user_metadata?.full_name || 'Anonymous User',
+        email: authUser?.email || 'Unknown'
+      };
+    }
+    return {
+      ...app,
+      profiles: appUser
+    };
+  });
 
   return (
     <div className="max-w-7xl mx-auto space-y-8">

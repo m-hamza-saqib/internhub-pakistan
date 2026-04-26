@@ -94,7 +94,7 @@ export default function HomePage() {
         .eq('is_published', true)
         .order('created_at', { ascending: false })
         .limit(3);
-      
+
       if (data) setFeaturedInternships(data);
       setLoading(false);
     };
@@ -150,8 +150,8 @@ export default function HomePage() {
               className="mt-20 grid grid-cols-3 gap-8 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
             >
               <StatCounter value={1200} suffix="+" label="Identity Verified" />
-              <StatCounter value={15}   suffix="+" label="Innovation Paths" />
-              <StatCounter value={100}  suffix="%" label="Digital Reliability" />
+              <StatCounter value={15} suffix="+" label="Innovation Paths" />
+              <StatCounter value={100} suffix="%" label="Digital Reliability" />
             </motion.div>
 
             {/* Value Prop Banner */}
@@ -187,7 +187,7 @@ export default function HomePage() {
         <div className="container">
           <div className="flex flex-col md:flex-row items-center gap-8">
             <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] shrink-0 border-r border-gray-100 pr-8 hidden md:block">
-               Partnering Institutions
+              Partnering Institutions
             </span>
             <div className="w-full overflow-x-auto pb-4 custom-scrollbar cursor-grab active:cursor-grabbing">
               <div className="flex gap-16 whitespace-nowrap px-8 md:px-0 items-center justify-between min-w-max">
@@ -205,7 +205,7 @@ export default function HomePage() {
       {/* ── HOW IT WORKS ── */}
       <section className="section bg-white py-24 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/4 bg-gradient-to-r from-transparent via-gray-100 to-transparent" />
-        
+
         <div className="container">
           <div className="text-center mb-20">
             <div className="flex items-center justify-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
@@ -218,11 +218,11 @@ export default function HomePage() {
               AWH TECH provides a high-octane environment for technical growth, moving from selection to verified professional credentials.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 relative">
             {/* Connecting Line */}
             <div className="absolute top-12 left-0 w-full h-px bg-gray-100 hidden lg:block -z-10" />
-            
+
             {/* Custom steps for the rebrand */}
             {[
               { title: 'Identity Entry', desc: 'Browse innovation tracks and submit your professional application for selection.', icon: Globe },
@@ -242,13 +242,13 @@ export default function HomePage() {
                 >
                   <div className="flex flex-col items-center md:items-start">
                     <div className="relative mb-8">
-                       <div className="absolute inset-0 bg-indigo-500/10 rounded-2xl blur-lg transition-all group-hover:bg-indigo-500/20" />
-                       <div className="relative h-20 w-20 flex items-center justify-center rounded-2xl bg-white border border-gray-100 shadow-xl text-indigo-600 transition-transform group-hover:-translate-y-1">
-                          <Icon size={32} strokeWidth={1.5} />
-                       </div>
-                       <div className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black shadow-lg">
-                          0{i + 1}
-                       </div>
+                      <div className="absolute inset-0 bg-indigo-500/10 rounded-2xl blur-lg transition-all group-hover:bg-indigo-500/20" />
+                      <div className="relative h-20 w-20 flex items-center justify-center rounded-2xl bg-white border border-gray-100 shadow-xl text-indigo-600 transition-transform group-hover:-translate-y-1">
+                        <Icon size={32} strokeWidth={1.5} />
+                      </div>
+                      <div className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black shadow-lg">
+                        0{i + 1}
+                      </div>
                     </div>
                     <h3 className="text-lg font-black text-gray-900 mb-3 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{step.title}</h3>
                     <p className="text-sm text-gray-500 leading-relaxed font-medium text-center md:text-left">{step.desc}</p>
@@ -306,43 +306,43 @@ export default function HomePage() {
       {/* ── FEATURED INTERNSHIPS ── */}
       <section className="section bg-white py-24 relative">
         <div className="container">
-           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-              <div className="max-w-xl">
-                 <div className="flex items-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
-                    <TrendingUp className="h-4 w-4" /> Current Openings
-                 </div>
-                 <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight">
-                    Premium <span className="italic opacity-80 text-indigo-600">Tracks</span>
-                 </h2>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="max-w-xl">
+              <div className="flex items-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
+                <TrendingUp className="h-4 w-4" /> Current Openings
               </div>
-              <Link href="/internships" className="btn-secondary group">
-                 View All Pathings <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-           </div>
+              <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight">
+                Premium <span className="italic opacity-80 text-indigo-600">Tracks</span>
+              </h2>
+            </div>
+            <Link href="/internships" className="btn-secondary group">
+              View All Pathings <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
 
-           {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 {[1,2,3].map(i => <div key={i} className="h-[400px] rounded-3xl bg-gray-50 animate-pulse border border-gray-100" />)}
-              </div>
-           ) : featuredInternships.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 {featuredInternships.map((internship, i) => (
-                    <motion.div
-                       key={internship.id}
-                       initial={{ opacity: 0, y: 20 }}
-                       whileInView={{ opacity: 1, y: 0 }}
-                       viewport={{ once: true }}
-                       transition={{ delay: i * 0.1 }}
-                    >
-                       <InternshipCard internship={internship} />
-                    </motion.div>
-                 ))}
-              </div>
-           ) : (
-              <div className="text-center py-20 rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/30">
-                 <p className="text-gray-400 font-medium">New innovation corridors opening soon.</p>
-              </div>
-           )}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[1, 2, 3].map(i => <div key={i} className="h-[400px] rounded-3xl bg-gray-50 animate-pulse border border-gray-100" />)}
+            </div>
+          ) : featuredInternships.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredInternships.map((internship, i) => (
+                <motion.div
+                  key={internship.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <InternshipCard internship={internship} />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20 rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/30">
+              <p className="text-gray-400 font-medium">New innovation corridors opening soon.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -414,9 +414,9 @@ export default function HomePage() {
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
             {[
               { value: 1500, suffix: '+', label: 'Identity Holders', icon: '🎓' },
-              { value: 900,  suffix: '+', label: 'Verified Credentials', icon: '📜' },
-              { value: 5.0,  suffix: '/5', label: 'Satisfaction Quotient', icon: '⭐' },
-              { value: 50,   suffix: '+', label: 'Hubs Reached', icon: '🌍' },
+              { value: 900, suffix: '+', label: 'Verified Credentials', icon: '📜' },
+              { value: 5.0, suffix: '/5', label: 'Satisfaction Quotient', icon: '⭐' },
+              { value: 50, suffix: '+', label: 'Hubs Reached', icon: '🌍' },
             ].map((stat, i) => (
               <motion.div
                 key={i}

@@ -70,12 +70,12 @@ export default function Navbar() {
     window.location.href = '/';
   };
 
-  const navBg = isHeroPage
-    ? scrolled ? 'bg-white/70 backdrop-blur-xl border-b border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.03)]' : 'bg-transparent'
+  const navBg = scrolled 
+    ? 'bg-white/90 backdrop-blur-xl border-b border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.04)]' 
     : 'bg-white/70 backdrop-blur-xl border-b border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.02)]';
 
-  const textColor = isHeroPage && !scrolled ? 'text-white' : 'text-gray-600';
-  const logoVariant = isHeroPage && !scrolled ? 'light' : 'dark';
+  const textColor = 'text-gray-600';
+  const logoVariant = 'dark';
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>

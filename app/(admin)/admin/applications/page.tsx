@@ -15,13 +15,17 @@ export default function AdminApplicationsPage() {
 
   useEffect(() => {
     const fetchApps = async () => {
-      const { data } = await supabase
-        .from('applications')
-        .select('*, applicant:profiles!applications_user_id_fkey(full_name, email, university, city, profile_completeness), internships(title, category, duration_weeks)')
-        .order('applied_at', { ascending: false });
-      
-      if (data) setApps(data);
-      setLoading(false);
+      try {
+        const res = await fetch('/api/admin/applications');
+        const data = await res.json();
+        if (res.ok && data) {
+          setApps(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch applications', error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchApps();
   }, []);
