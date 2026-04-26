@@ -22,7 +22,7 @@ export default function AdminAnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [totalInterns, setTotalInterns] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   const [form, setForm] = useState({
     title: '',
@@ -40,17 +40,18 @@ export default function AdminAnnouncementsPage() {
     setLoading(false);
   }, []);
 
-  const fetchInternCount = useCallback(async () => {
+  const fetchUserCount = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
     const { count } = await supabase
       .from('profiles')
       .select('id', { count: 'exact', head: true })
-      .eq('role', 'intern');
-    setTotalInterns(count || 0);
+      .neq('id', user?.id); // Exclude the current admin
+    setTotalUsers(count || 0);
   }, [supabase]);
 
   useEffect(() => {
     fetchAnnouncements();
-    fetchInternCount();
+    fetchUserCount();
 
     // Real-time subscription
     const channel = supabase
@@ -67,7 +68,7 @@ export default function AdminAnnouncementsPage() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [fetchAnnouncements, fetchInternCount, supabase]);
+  }, [fetchAnnouncements, fetchUserCount, supabase]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +85,7 @@ export default function AdminAnnouncementsPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to send');
-      toast.success(`✅ Announcement sent to ${json.sent} intern${json.sent !== 1 ? 's' : ''}!`);
+      toast.success(`✅ Announcement sent to ${json.sent} user${json.sent !== 1 ? 's' : ''}!`);
       setForm({ title: '', body: '', link: '', type: 'announcement' });
       fetchAnnouncements();
     } catch (err: any) {
@@ -108,7 +109,7 @@ export default function AdminAnnouncementsPage() {
             Announcement Center
           </h1>
           <p className="text-sm text-gray-500 mt-1 ml-[52px]">
-            Broadcast platform-wide messages to all interns in real-time.
+            Broadcast platform-wide messages to all users in real-time.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -138,7 +139,7 @@ export default function AdminAnnouncementsPage() {
               <h2 className="font-black text-gray-900 text-lg">Compose Message</h2>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary-50 border border-primary-100 text-primary-700 text-xs font-black">
                 <Users className="h-3.5 w-3.5" />
-                {totalInterns} Recipients
+                {totalUsers} Recipients
               </div>
             </div>
 
@@ -234,7 +235,7 @@ export default function AdminAnnouncementsPage() {
               {sending ? (
                 <><Loader2 className="h-5 w-5 animate-spin" /> Broadcasting...</>
               ) : (
-                <><Send className="h-5 w-5" /> Broadcast to All Interns</>
+                <><Send className="h-5 w-5" /> Broadcast to All Users</>
               )}
             </button>
           </form>
@@ -265,7 +266,7 @@ export default function AdminAnnouncementsPage() {
               </div>
               <h3 className="text-lg font-bold text-gray-900">No announcements yet</h3>
               <p className="text-sm text-gray-500 mt-1 max-w-xs mx-auto">
-                Compose your first message on the left to notify all interns.
+                Compose your first message on the left to notify all users.
               </p>
             </div>
           ) : (
