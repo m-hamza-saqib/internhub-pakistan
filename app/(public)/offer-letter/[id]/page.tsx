@@ -12,7 +12,7 @@ export default async function OfferLetterPage(
   const { id } = await props.params;
   const supabase = await createClient();
 
-  const { data: application } = await supabase
+  const { data: applicationRaw } = await supabase
     .from('applications')
     .select(`
       *,
@@ -21,6 +21,8 @@ export default async function OfferLetterPage(
     `)
     .eq('id', id)
     .single();
+
+  const application = applicationRaw as any;
 
   if (!application || application.status !== 'accepted') {
     notFound();
