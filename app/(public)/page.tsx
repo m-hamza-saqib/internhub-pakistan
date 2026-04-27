@@ -11,22 +11,37 @@ import { INTERNSHIP_CATEGORIES, FAQ_ITEMS, TRUSTED_UNIVERSITIES, TESTIMONIALS, S
 
 import { cn } from '@/lib/utils';
 
-/* ─── Counter Animation Hook ─── */
-function useCounter(target: number, duration = 2000) {
+import Image from 'next/image';
+
+/* ─── Counter Animation Hook (Optimized) ─── */
+function useCounter(target: number, duration = 1500) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   useEffect(() => {
     if (!inView) return;
-    let start = 0;
-    const step = target / (duration / 16);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(Math.floor(start));
-    }, 16);
-    return () => clearInterval(timer);
+    
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      
+      const currentCount = Math.floor(target * percentage);
+      setCount(currentCount);
+
+      if (percentage < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        setCount(target);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
   }, [inView, target, duration]);
 
   return { count, ref };
@@ -37,10 +52,10 @@ function StatCounter({ value, suffix, label }: { value: number; suffix: string; 
   const { count, ref } = useCounter(value);
   return (
     <div ref={ref} className="text-center">
-      <div className="text-5xl font-black text-white tracking-tighter">
+      <div className="text-4xl md:text-5xl font-black text-white tracking-tighter tabular-nums">
         {count.toLocaleString()}{suffix}
       </div>
-      <div className="mt-2 text-[10px] font-black text-indigo-400 uppercase tracking-[0.25em]">{label}</div>
+      <div className="mt-2 text-[9px] font-black text-blue-200/50 uppercase tracking-[0.3em] leading-none">{label}</div>
     </div>
   );
 }
@@ -50,35 +65,39 @@ function FaqItem({ q, a, index }: { q: string; a: string; index: number }) {
   const [open, setOpen] = useState(false);
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ duration: 0.3, delay: index * 0.03 }}
       className="border-b border-gray-200 last:border-0"
     >
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-5 text-left text-sm font-semibold text-gray-900 hover:text-primary-500 transition-colors"
+        className="flex w-full items-center justify-between py-6 text-left text-sm font-bold text-gray-900 hover:text-primary-500 transition-colors"
       >
-        {q}
-        <ChevronDown className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <span className="max-w-[85%]">{q}</span>
+        <ChevronDown className={`h-4 w-4 shrink-0 text-gray-400 transition-transform duration-300 ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className="pb-5 text-sm text-gray-600 leading-relaxed"
-        >
-          {a}
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="pb-6 text-sm text-gray-600 leading-relaxed overflow-hidden"
+          >
+            {a}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
 
 import { createClient } from '@/lib/supabase/client';
 import InternshipCard from '@/components/cards/InternshipCard';
+import { AnimatePresence } from 'framer-motion';
 
 /* ─── Main Page ─── */
 export default function HomePage() {
@@ -99,55 +118,55 @@ export default function HomePage() {
       setLoading(false);
     };
     fetchLatest();
-  }, []);
+  }, [supabase]);
 
   return (
 
     <>
       {/* ── HERO ── */}
-      <section className="gradient-hero relative min-h-screen flex items-center overflow-hidden">
-        {/* Background dots */}
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+      <section className="gradient-hero relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Background dots (Optimized) */}
+        <div className="absolute inset-0 opacity-[0.03] select-none pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }} />
 
-        <div className="container relative z-10 pt-24 pb-20">
+        <div className="container relative z-10 pt-20 pb-16">
           <div className="mx-auto max-w-4xl text-center">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-medium text-blue-200 mb-6 uppercase tracking-wider">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+              <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-1.5 text-[10px] font-black text-blue-200 mb-8 uppercase tracking-[0.2em]">
                 <Sparkles className="h-3 w-3" /> Building solutions delivering excellence
               </span>
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="font-instrument-serif text-5xl font-bold text-white leading-[1.1] md:text-6xl lg:text-8xl tracking-tight"
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}
+              className="font-instrument-serif text-5xl font-bold text-white leading-[1.05] md:text-7xl lg:text-9xl tracking-tight"
             >
               Master Your Future{' '}
-              <span className="italic text-indigo-300 opacity-90">With AWH TECH</span>
+              <span className="italic text-indigo-300">With AWH TECH</span>
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-8 text-lg md:text-xl text-blue-100/80 leading-relaxed max-w-2xl mx-auto font-medium"
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-10 text-base md:text-lg text-blue-100/70 leading-relaxed max-w-2xl mx-auto font-medium"
             >
               Start-up powered remote internships. Real-world projects. Industry-grade certification. Join AWH TECH for an immersive professional journey with <strong className="text-white">lifetime access</strong> to elite technical paths.
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-5"
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-14 flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              <Link href="/internships" className="btn-primary px-10 py-4 text-base shadow-[0_20px_50px_rgba(28,59,120,0.3)] hover:shadow-[0_20px_50px_rgba(28,59,120,0.5)]">
+              <Link href="/internships" className="btn-primary px-10 py-4.5 text-base shadow-xl">
                 Start Exploring <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link href="/about" className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 backdrop-blur-md px-10 py-4 text-base font-bold text-white transition-all hover:bg-white/10 hover:border-white/40 active:scale-95">
+              <Link href="/about" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 py-4.5 px-10 text-base font-black text-white hover:bg-white/10 transition-colors">
                 Our Mission
               </Link>
             </motion.div>
 
-            {/* Hero Stats - Glassmorphic */}
+            {/* Hero Stats (Simple Glass) */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, type: 'spring' }}
-              className="mt-20 grid grid-cols-3 gap-8 rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.8 }}
+              className="mt-24 grid grid-cols-3 gap-4 md:gap-8 rounded-[2rem] border border-white/5 bg-white/[0.02] p-8 md:p-12"
             >
               <StatCounter value={1200} suffix="+" label="Identity Verified" />
               <StatCounter value={15} suffix="+" label="Innovation Paths" />
@@ -156,43 +175,39 @@ export default function HomePage() {
 
             {/* Value Prop Banner */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-              className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+              className="mt-10 flex flex-wrap items-center justify-center gap-3 text-[10px]"
             >
-              <span className="flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-emerald-300 font-semibold">
-                <CheckCircle className="h-4 w-4" /> Zero-Tuition Learning
+              <span className="flex items-center gap-2 rounded-lg bg-emerald-500/10 border border-emerald-500/10 px-4 py-2 text-emerald-300 font-bold uppercase tracking-widest">
+                <CheckCircle className="h-3 w-3" /> Zero-Tuition Learning
               </span>
-              <span className="flex items-center gap-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-4 py-2 text-indigo-300 font-semibold">
+              <span className="flex items-center gap-2 rounded-lg bg-indigo-500/10 border border-indigo-500/10 px-4 py-2 text-indigo-300 font-bold uppercase tracking-widest">
                 💳 PKR 300 Community Enabler
               </span>
-              <span className="flex items-center gap-2 rounded-full bg-blue-500/10 border border-blue-500/20 px-4 py-2 text-blue-300 font-semibold">
+              <span className="flex items-center gap-2 rounded-lg bg-blue-500/10 border border-blue-500/10 px-4 py-2 text-blue-300 font-bold uppercase tracking-widest">
                 🔓 Permanent Dashboard Proxy
               </span>
             </motion.div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/40"
-        >
+        {/* Scroll indicator (Static or simple CSS) */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/20 animate-bounce">
           <ChevronDown className="h-6 w-6" />
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── TRUST BAR ── */}
-      <section className="border-y border-gray-200 bg-white py-12">
+      {/* ── TRUST BAR (Optimized) ── */}
+      <section className="border-y border-gray-100 bg-white/80 backdrop-blur-sm py-12">
         <div className="container">
           <div className="flex flex-col md:flex-row items-center gap-8">
-            <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] shrink-0 border-r border-gray-100 pr-8 hidden md:block">
-              Partnering Institutions
+            <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.4em] shrink-0 border-r border-gray-100 pr-8 hidden md:block">
+              Institutional Partners
             </span>
-            <div className="w-full overflow-x-auto pb-4 custom-scrollbar cursor-grab active:cursor-grabbing">
-              <div className="flex gap-16 whitespace-nowrap px-8 md:px-0 items-center justify-between min-w-max">
+            <div className="w-full overflow-x-auto pb-2 no-scrollbar">
+              <div className="flex gap-16 items-center justify-between min-w-max px-4">
                 {TRUSTED_UNIVERSITIES.map((uni, i) => (
-                  <span key={i} className="text-sm font-black text-gray-400 hover:text-indigo-600 transition-all hover:scale-105">
+                  <span key={i} className="text-[11px] font-black text-gray-300 hover:text-primary-500 transition-colors cursor-default uppercase tracking-widest translate-z-0">
                     {uni}
                   </span>
                 ))}
@@ -202,28 +217,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section className="section bg-white py-24 relative overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/4 bg-gradient-to-r from-transparent via-gray-100 to-transparent" />
-
+      {/* ── HOW IT WORKS (Optimized) ── */}
+      <section className="py-28 relative bg-white">
         <div className="container">
           <div className="text-center mb-20">
-            <div className="flex items-center justify-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
+            <div className="flex items-center justify-center gap-2 mb-4 text-primary-500 font-black text-[10px] uppercase tracking-[0.3em]">
               <Sparkles className="h-3 w-3" /> Excellence Lifecycle
             </div>
-            <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight mb-4">
-              The Path to <span className="italic opacity-80 text-indigo-600">Expertise</span>
+            <h2 className="font-instrument-serif text-5xl md:text-7xl text-gray-900 tracking-tight mb-4">
+              The Path to <span className="italic text-primary-600">Expertise</span>
             </h2>
-            <p className="text-gray-500 font-medium max-w-xl mx-auto">
+            <p className="text-gray-500 font-medium max-w-xl mx-auto text-sm md:text-base leading-relaxed">
               AWH TECH provides a high-octane environment for technical growth, moving from selection to verified professional credentials.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 relative">
-            {/* Connecting Line */}
-            <div className="absolute top-12 left-0 w-full h-px bg-gray-100 hidden lg:block -z-10" />
-
-            {/* Custom steps for the rebrand */}
+          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
             {[
               { title: 'Identity Entry', desc: 'Browse innovation tracks and submit your professional application for selection.', icon: Globe },
               { title: 'AWH Selection', desc: 'Secure your spot. Receive your offer letter and join the technical community.', icon: CheckCircle },
@@ -234,25 +243,22 @@ export default function HomePage() {
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="group"
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="relative flex flex-col items-center md:items-start text-center md:text-left group translate-z-0"
                 >
-                  <div className="flex flex-col items-center md:items-start">
-                    <div className="relative mb-8">
-                      <div className="absolute inset-0 bg-indigo-500/10 rounded-2xl blur-lg transition-all group-hover:bg-indigo-500/20" />
-                      <div className="relative h-20 w-20 flex items-center justify-center rounded-2xl bg-white border border-gray-100 shadow-xl text-indigo-600 transition-transform group-hover:-translate-y-1">
-                        <Icon size={32} strokeWidth={1.5} />
-                      </div>
-                      <div className="absolute -top-3 -right-3 h-8 w-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black shadow-lg">
-                        0{i + 1}
-                      </div>
+                  <div className="mb-8 relative">
+                    <div className="h-16 w-16 flex items-center justify-center rounded-2xl bg-gray-50 border border-gray-100 text-primary-600 shadow-sm transition-transform group-hover:-translate-y-1">
+                      <Icon size={28} strokeWidth={1.5} />
                     </div>
-                    <h3 className="text-lg font-black text-gray-900 mb-3 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{step.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed font-medium text-center md:text-left">{step.desc}</p>
+                    <div className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-primary-600 text-white flex items-center justify-center text-[10px] font-black shadow-lg">
+                      {i + 1}
+                    </div>
                   </div>
+                  <h3 className="text-sm font-black text-gray-900 mb-2 tracking-widest uppercase">{step.title}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed font-medium">{step.desc}</p>
                 </motion.div>
               );
             })}
@@ -260,35 +266,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CATEGORIES ── */}
-      <section className="section bg-gray-50/50 py-24 border-y border-gray-100">
+      {/* ── CATEGORIES (Optimized) ── */}
+      <section className="py-28 bg-gray-50 border-y border-gray-200/50">
         <div className="container">
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
+            <div className="flex items-center justify-center gap-2 mb-4 text-primary-500 font-black text-[10px] uppercase tracking-[0.4em]">
               <Globe className="h-4 w-4" /> Innovation Corridors
             </div>
-            <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight mb-4">
-              Explore <span className="italic opacity-80">Domains</span>
+            <h2 className="font-instrument-serif text-5xl md:text-7xl text-gray-900 tracking-tight mb-4">
+              Explore <span className="italic">Domains</span>
             </h2>
-            <p className="text-gray-500 font-medium max-w-xl mx-auto">
-              Our tracks are engineered to deliver excellence across every technical specialization.
-            </p>
           </div>
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             {INTERNSHIP_CATEGORIES.map((cat, i) => (
               <motion.div
                 key={cat.id}
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
+                transition={{ duration: 0.3, delay: i * 0.02 }}
+                className="translate-z-0"
               >
                 <Link
                   href={`/internships?category=${cat.id}`}
-                  className="card flex flex-col items-center gap-4 p-8 text-center group border-none shadow-premium hover:shadow-2xl transition-all hover:bg-white active:scale-95 h-full"
+                  className="card flex flex-col items-center gap-4 p-8 text-center group border-none shadow-sm hover:shadow-lg transition-all bg-white h-full"
                 >
-                  <span className="text-4xl group-hover:scale-110 transition-transform grayscale group-hover:grayscale-0">{cat.icon}</span>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-tight group-hover:text-indigo-600 transition-colors">
+                  <span className="text-4xl group-hover:scale-110 transition-transform duration-300 pointer-events-none">{cat.icon}</span>
+                  <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] group-hover:text-primary-600 transition-colors">
                     {cat.label}
                   </span>
                 </Link>
@@ -296,111 +300,101 @@ export default function HomePage() {
             ))}
           </div>
           <div className="mt-16 text-center">
-            <Link href="/internships" className="btn-primary px-10 py-4 shadow-xl shadow-primary-500/10">
+            <Link href="/internships" className="btn-primary">
               Launch Career <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── FEATURED INTERNSHIPS ── */}
-      <section className="section bg-white py-24 relative">
+      {/* ── FEATURED INTERNSHIPS (Optimized) ── */}
+      <section className="py-28 bg-white">
         <div className="container">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
             <div className="max-w-xl">
-              <div className="flex items-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
+              <div className="flex items-center gap-2 mb-4 text-primary-500 font-black text-[10px] uppercase tracking-[0.4em]">
                 <TrendingUp className="h-4 w-4" /> Current Openings
               </div>
-              <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight">
-                Premium <span className="italic opacity-80 text-indigo-600">Tracks</span>
+              <h2 className="font-instrument-serif text-5xl md:text-7xl text-gray-900 tracking-tight">
+                Premium <span className="italic text-primary-600">Tracks</span>
               </h2>
             </div>
-            <Link href="/internships" className="btn-secondary group">
-              View All Pathings <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <Link href="/internships" className="btn-secondary">
+              View All Paths <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[1, 2, 3].map(i => <div key={i} className="h-[400px] rounded-3xl bg-gray-50 animate-pulse border border-gray-100" />)}
+              {[1, 2, 3].map(i => <div key={i} className="h-96 rounded-2xl bg-gray-50 animate-pulse border border-gray-100" />)}
             </div>
           ) : featuredInternships.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredInternships.map((internship, i) => (
                 <motion.div
                   key={internship.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="translate-z-0"
                 >
                   <InternshipCard internship={internship} />
                 </motion.div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 rounded-3xl border-2 border-dashed border-gray-100 bg-gray-50/30">
-              <p className="text-gray-400 font-medium">New innovation corridors opening soon.</p>
+            <div className="text-center py-20 rounded-2xl border-2 border-dashed border-gray-100 bg-gray-50/50">
+              <p className="text-xs font-bold text-gray-400 tracking-widest uppercase">New innovation corridors opening soon.</p>
             </div>
           )}
         </div>
       </section>
 
-      {/* ── WHAT YOU GET ── */}
-      <section className="section bg-white py-24 relative overflow-hidden">
+      {/* ── WHAT YOU GET (Optimized) ── */}
+      <section className="py-28 bg-gray-50 relative overflow-hidden">
         <div className="container">
           <div className="text-center mb-20">
-            <div className="flex items-center justify-center gap-2 mb-4 text-indigo-500 font-black text-[10px] uppercase tracking-[0.3em]">
+            <div className="flex items-center justify-center gap-2 mb-4 text-primary-500 font-black text-[10px] uppercase tracking-[0.4em]">
               <Award className="h-4 w-4" /> Technical Assets
             </div>
-            <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight mb-4">
-              Your Professional <span className="italic opacity-80 text-indigo-600">Yield</span>
+            <h2 className="font-instrument-serif text-5xl md:text-7xl text-gray-900 tracking-tight mb-4">
+              Your Professional <span className="italic text-primary-600">Yield</span>
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {[
               {
-                icon: FileText, color: 'bg-indigo-50 text-indigo-600',
+                icon: FileText, color: 'bg-primary-50 text-primary-600',
                 title: 'AWH Offer Letter',
                 desc: 'A premium, verified selection document sent to your identity portal on acceptance. Your official proof of selection.',
-                items: ['AWH TECH Headed Document', 'Encrypted Verification Code', 'Direct Portal Download'],
               },
               {
                 icon: Briefcase, color: 'bg-emerald-50 text-emerald-600',
                 title: 'Innovation Portfolio',
                 desc: 'Build actual solutions delivering excellence. Every commit and solution contributes to your industry-grade portfolio.',
-                items: ['Practical Implementation', 'Professional Peer Reviews', 'Live Project Snapshots'],
               },
               {
                 icon: Award, color: 'bg-amber-50 text-amber-600',
                 title: 'Global Credential',
                 desc: 'Earn a stunning verified certificate. Recognized by industry leaders and ready for your professional networks.',
-                items: ['QR Security Verification', 'Global Authenticity URL', 'One-Click Network Shared'],
               },
             ].map((item, i) => {
               const Icon = item.icon;
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="card p-10 border-none shadow-premium bg-white hover:shadow-2xl transition-all h-full flex flex-col group"
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="card p-10 border-none shadow-sm hover:shadow-lg transition-all h-full flex flex-col group bg-white translate-z-0"
                 >
-                  <div className={cn("inline-flex h-14 w-14 items-center justify-center rounded-2xl mb-8 group-hover:scale-110 transition-transform", item.color)}>
+                  <div className={cn("inline-flex h-14 w-14 items-center justify-center rounded-2xl mb-8 transition-transform duration-300 group-hover:scale-105", item.color)}>
                     <Icon className="h-7 w-7" />
                   </div>
-                  <h3 className="text-xl font-black text-gray-900 mb-4 tracking-tight uppercase leading-none">{item.title}</h3>
-                  <p className="text-sm text-gray-500 mb-8 leading-relaxed font-medium">{item.desc}</p>
-                  <ul className="space-y-4 mt-auto">
-                    {item.items.map((point, j) => (
-                      <li key={j} className="flex items-center gap-3 text-[11px] font-black text-gray-400 uppercase tracking-widest">
-                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 shadow-sm shadow-indigo-500/50" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="text-sm font-black text-gray-900 mb-4 tracking-widest uppercase">{item.title}</h3>
+                  <p className="text-xs text-gray-500 leading-relaxed font-medium">{item.desc}</p>
                 </motion.div>
               );
             })}
@@ -408,36 +402,30 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── STATS ── */}
-      <section className="bg-gray-950 py-32 relative overflow-hidden">
-        {/* Background Decorative Element */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
-        
+      {/* ── STATS (Optimized) ── */}
+      <section className="bg-primary-900 py-32 relative overflow-hidden">
         <div className="container relative z-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { value: 1500, suffix: '+', label: 'Identity Holders', icon: Users, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-              { value: 900, suffix: '+', label: 'Verified Credentials', icon: Award, color: 'text-amber-400', bg: 'bg-amber-400/10' },
-              { value: 5, suffix: '/5', label: 'Satisfaction Quotient', icon: Star, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-              { value: 50, suffix: '+', label: 'Hubs Reached', icon: Globe, color: 'text-indigo-400', bg: 'bg-indigo-400/10' },
+              { value: 1500, suffix: '+', label: 'Identity Holders', icon: Users },
+              { value: 900, suffix: '+', label: 'Verified Credentials', icon: Award },
+              { value: 98, suffix: '%', label: 'Efficiency Quotient', icon: Star },
+              { value: 50, suffix: '+', label: 'Hubs Reached', icon: Globe },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.8, type: 'spring' }}
-                  className="relative group h-full"
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="flex flex-col items-center translate-z-0"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl duration-500" />
-                  <div className="h-full flex flex-col items-center p-10 rounded-3xl border border-white/5 bg-white/[0.03] backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-white/10 shadow-2xl">
-                    <div className={cn("p-4 rounded-2xl mb-8 transition-transform group-hover:scale-110 duration-500", stat.bg, stat.color)}>
-                      <Icon size={32} strokeWidth={1.5} />
-                    </div>
-                    <StatCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
+                  <div className="h-12 w-12 rounded-xl bg-white/5 flex items-center justify-center text-primary-300 mb-6">
+                    <Icon size={24} />
                   </div>
+                  <StatCounter value={stat.value} suffix={stat.suffix} label={stat.label} />
                 </motion.div>
               );
             })}
@@ -445,38 +433,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ── */}
-      <section className="section gradient-subtle py-24">
+      {/* ── TESTIMONIALS (Optimized) ── */}
+      <section className="py-28 bg-white">
         <div className="container">
-          <div className="text-center mb-16">
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Global Feedback</span>
-            <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight mt-2">Intern <span className="italic opacity-80">Insights</span></h2>
+          <div className="text-center mb-20 text-gray-900">
+            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary-600 leading-none mb-4 block">Feedback loops</span>
+            <h2 className="font-instrument-serif text-5xl md:text-7xl tracking-tight">Intern <span className="italic text-primary-600">Insights</span></h2>
           </div>
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {TESTIMONIALS.map((t, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="card p-8 border-none shadow-premium hover:shadow-2xl transition-all h-full flex flex-col"
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+                className="card p-8 border-none shadow-sm hover:shadow-md transition-all h-full flex flex-col bg-gray-50/50 translate-z-0"
               >
-                <div className="flex items-center gap-1 mb-5">
-                  {Array.from({ length: t.rating }).map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <div className="flex items-center gap-1 mb-6">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <Star key={j} className={cn("h-3 w-3", j < t.rating ? "fill-amber-400 text-amber-400" : "text-gray-200")} />
                   ))}
                 </div>
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed mb-auto italic font-medium">"{t.text}"</p>
-                <div className="flex items-center gap-4 mt-8 pt-6 border-t border-gray-100">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 text-sm font-black shadow-inner">
-                    {t.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                  <div>
-                    <div className="text-sm font-black text-gray-900">{t.name}</div>
-                    <div className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{t.role}</div>
-                    <div className="text-[10px] text-gray-400 font-medium tracking-tight uppercase">{t.uni} · {t.city}</div>
-                  </div>
+                <p className="text-sm text-gray-600 leading-relaxed font-medium italic mb-10 shrink-0">"{t.text}"</p>
+                <div className="mt-auto flex items-center gap-3">
+                   <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-primary-600 text-white text-[10px] font-black shadow-inner">
+                      {t.name.substring(0, 2).toUpperCase()}
+                   </div>
+                   <div>
+                      <div className="text-[11px] font-black text-gray-900 uppercase tracking-wider">{t.name}</div>
+                      <div className="text-[9px] font-bold text-primary-500 uppercase tracking-widest">{t.role}</div>
+                   </div>
                 </div>
               </motion.div>
             ))}
@@ -484,15 +471,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── FAQ ── */}
-      <section className="section bg-white py-24">
+      {/* ── FAQ (Optimized) ── */}
+      <section className="py-28 bg-gray-50">
         <div className="container">
           <div className="mx-auto max-w-3xl">
-            <div className="text-center mb-12">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500">Support Hub</span>
-              <h2 className="font-instrument-serif text-4xl md:text-6xl text-gray-900 tracking-tight mt-2">Common <span className="italic opacity-80">Questions</span></h2>
+            <div className="text-center mb-16 text-gray-900">
+              <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary-600 mb-4 block">Precision support</span>
+              <h2 className="font-instrument-serif text-5xl md:text-7xl tracking-tight">Common <span className="italic text-primary-600">Questions</span></h2>
             </div>
-            <div className="divide-y divide-gray-200 rounded-3xl border border-gray-100 bg-white px-8 py-4 shadow-premium">
+            <div className="space-y-2">
               {FAQ_ITEMS.map((item, i) => (
                 <FaqItem key={i} q={item.q} a={item.a} index={i} />
               ))}
@@ -501,45 +488,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-gray-950 py-32 overflow-hidden relative">
-        {/* Glow effect */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 bg-indigo-600/20 blur-[120px] pointer-events-none" />
+      {/* ── CTA (Optimized) ── */}
+      <section className="bg-primary-950 py-32 relative overflow-hidden">
         <div className="container relative z-10">
           <div className="mx-auto max-w-3xl text-center">
-            <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">
-              Start Your Journey
+            <h2 className="text-5xl md:text-8xl font-black text-white mb-8 tracking-tighter leading-none">
+              Apply For Excellence
             </h2>
-            <p className="text-lg text-blue-100 mb-4 font-medium">
-              Join the technical community at <strong>AWH TECH</strong>.
+            <p className="text-sm md:text-base text-primary-100/60 mb-12 leading-relaxed max-w-xl mx-auto font-medium uppercase tracking-[0.1em]">
+               Building Solutions · Delivering Excellence across every technical speciality. Onboard today and lock in your professional growth.
             </p>
-            <p className="text-base text-gray-400 mb-10 leading-relaxed max-w-xl mx-auto">
-              Our paths are engineered for those who seek excellence. Onboard today and unlock your lifetime professional proxy.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <Link href="/register" className="btn-primary px-10 py-4 text-base bg-white text-gray-900 hover:bg-gray-100 border-none">
-                Register Identity <ArrowRight className="h-5 w-5" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/register" className="btn-primary bg-white text-primary-900 hover:bg-gray-100 shadow-2xl px-12 py-5 font-black uppercase tracking-widest">
+                Get Started <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link href="/internships" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-10 py-4 text-base font-bold text-white hover:bg-white/5 transition-all">
-                Explore Tracks
+              <Link href="/internships" className="btn-secondary bg-transparent border-white/20 text-white hover:bg-white/5 px-12 py-5 font-black uppercase tracking-widest">
+                Tracks
               </Link>
             </div>
-            <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {[
-                { icon: '✨', label: 'AWH Excellence', sub: 'Driven by technology' },
-                { icon: '💎', label: 'Premium Assets', sub: 'Industry-grade quality' },
-                { icon: '🔒', label: 'Lifetime Portal', sub: 'Never expires' },
-              ].map((item) => (
-                <div key={item.label} className="rounded-3xl bg-white/5 border border-white/5 p-6 text-center group hover:bg-white/10 transition-colors">
-                  <div className="text-3xl mb-2">{item.icon}</div>
-                  <div className="text-sm font-black text-white uppercase tracking-widest">{item.label}</div>
-                  <div className="text-[10px] text-gray-500 mt-1 uppercase font-bold tracking-tight">{item.sub}</div>
-                </div>
-              ))}
+            <div className="mt-20 pt-10 border-t border-white/5">
+               <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.5em] flex items-center justify-center gap-3">
+                 <Shield className="h-3 w-3" /> Secure Access Verified
+               </p>
             </div>
-            <p className="mt-10 text-[10px] font-black text-gray-500 flex items-center justify-center gap-2 uppercase tracking-[0.2em]">
-              <Shield className="h-4 w-4 text-indigo-500" />
-              Building Solutions · Delivering Excellence
-            </p>
           </div>
         </div>
       </section>

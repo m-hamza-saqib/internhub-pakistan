@@ -14,6 +14,8 @@ interface InternshipCardProps {
   internship: Internship;
 }
 
+import Image from 'next/image';
+
 export default function InternshipCard({ internship }: InternshipCardProps) {
   const difficulty = DIFFICULTY_OPTIONS.find((d) => d.value === internship.difficulty);
   const supabase = createClient();
@@ -23,7 +25,7 @@ export default function InternshipCard({ internship }: InternshipCardProps) {
 
   useEffect(() => {
     // Subscribe to real-time updates for this specific internship
-    const channelId = `intern-slots-${Math.random().toString(36).substring(2)}`;
+    const channelId = `intern-slots-${internship.id}`;
     const channel = supabase
       .channel(channelId)
       .on(
@@ -46,53 +48,56 @@ export default function InternshipCard({ internship }: InternshipCardProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [internship.id]);
+  }, [internship.id, supabase]);
 
   const spotsLeft = internship.spots_total - spotsFilled;
   const spotsPercent = Math.round((spotsFilled / internship.spots_total) * 100);
   const isFull = spotsLeft <= 0;
 
   return (
-    <div className="group card flex flex-col h-full overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary-100">
+    <div className="group card flex flex-col h-full overflow-hidden border-none shadow-sm hover:shadow-xl transition-shadow duration-300">
       {/* Thumbnail / Header Gradient */}
-      <div className="relative h-44 w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-primary-900 to-primary-700">
+      <div className="relative h-44 w-full overflow-hidden bg-gray-900">
         {internship.thumbnail_url ? (
-          <img
+          <Image
             src={internship.thumbnail_url}
             alt={internship.title}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:opacity-90"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={false}
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-             <span className="text-8xl font-black text-white italic tracking-tighter mix-blend-overlay">IH</span>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 bg-gradient-to-br from-indigo-900 to-primary-900">
+             <span className="text-7xl font-black text-white italic tracking-tighter">AWH</span>
           </div>
         )}
         
         {/* Chips */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2">
-          <span className="inline-flex items-center rounded-lg bg-white/10 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-widest border border-white/20">
+        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+          <span className="inline-flex items-center rounded-lg bg-gray-900/40 backdrop-blur-sm px-2.5 py-1 text-[9px] font-black text-white uppercase tracking-widest border border-white/10">
             {internship.category.replace(/-/g, ' ')}
           </span>
         </div>
 
-        <div className="absolute top-4 right-4">
-          <div className={cn('h-2.5 w-2.5 rounded-full ring-4 ring-black/10', 
-             difficulty?.value === 'beginner' ? 'bg-emerald-400' : 
-             difficulty?.value === 'intermediate' ? 'bg-amber-400' : 'bg-rose-400'
+        <div className="absolute top-4 right-4 z-10">
+          <div className={cn('h-2.5 w-2.5 rounded-full ring-4 shadow-sm', 
+             difficulty?.value === 'beginner' ? 'bg-emerald-400 ring-emerald-400/20' : 
+             difficulty?.value === 'intermediate' ? 'bg-amber-400 ring-amber-400/20' : 'bg-rose-400 ring-rose-400/20'
           )} title={difficulty?.label} />
         </div>
 
         {/* Full badge */}
         {isFull && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[2px]">
-            <span className="rounded-full bg-red-500 px-4 py-1.5 text-xs font-black text-white uppercase tracking-widest">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[1px] z-20">
+            <span className="rounded-lg bg-white/90 px-4 py-1.5 text-[10px] font-black text-gray-900 uppercase tracking-widest shadow-xl">
               Fully Enrolled
             </span>
           </div>
         )}
 
         {/* Floating Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 z-0" />
       </div>
 
       {/* Body Content */}
