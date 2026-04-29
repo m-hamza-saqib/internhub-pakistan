@@ -87,7 +87,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <div className="hidden items-center gap-8 lg:flex">
+          <div className="hidden items-center gap-6 md:flex">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -114,7 +114,7 @@ export default function Navbar() {
           </div>
 
           {/* Auth Section */}
-          <div className="hidden items-center gap-4 lg:flex">
+          <div className="hidden items-center gap-4 md:flex">
             {user ? (
               <>
                 <Link href="/notifications" className={`relative p-2.5 rounded-xl hover:bg-black/5 transition-colors ${textColor}`}>
@@ -138,10 +138,10 @@ export default function Navbar() {
                   <AnimatePresence>
                     {dropdownOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        transition={{ duration: 0.2 }}
                         className="absolute right-0 mt-3 w-64 origin-top-right rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl"
                         onMouseLeave={() => setDropdownOpen(false)}
                       >
@@ -179,7 +179,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <div className="hidden items-center gap-3 lg:flex">
+              <div className="hidden items-center gap-3 md:flex">
                 <Link href="/login" className={`text-sm font-semibold transition-colors hover:text-primary-500 ${textColor}`}>Login</Link>
                 <Link href="/register" className="btn-primary">
                   Get Started
@@ -191,7 +191,7 @@ export default function Navbar() {
           {/* Mobile Hamburger */}
           <button
             onClick={() => setMobileOpen(true)}
-            className={`rounded-xl p-2.5 transition-colors hover:bg-black/5 lg:hidden ${textColor}`}
+            className={`rounded-xl p-2.5 transition-colors hover:bg-black/5 md:hidden ${textColor}`}
             aria-label="Open menu"
           >
             <Menu className="h-6 w-6" />
@@ -208,8 +208,9 @@ export default function Navbar() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-[60] bg-gray-900/40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-[60] bg-gray-900/40 backdrop-blur-sm md:hidden touch-none"
             />
             
             {/* Sidebar Content */}
@@ -217,8 +218,8 @@ export default function Navbar() {
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 z-[70] h-full w-[280px] bg-white shadow-2xl p-0 lg:hidden flex flex-col"
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="fixed right-0 top-0 z-[70] h-[100dvh] w-[280px] bg-white shadow-2xl p-0 md:hidden flex flex-col overscroll-contain"
             >
               {/* Header */}
               <div className="flex items-center justify-between p-6 border-b border-gray-50 bg-gray-50/50">

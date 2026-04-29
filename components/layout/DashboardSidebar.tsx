@@ -93,7 +93,7 @@ export default function DashboardSidebar({ open = true, onClose }: DashboardSide
   ];
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col bg-white border-r border-gray-100 shadow-sm">
+    <div className="flex h-full flex-col bg-white overflow-hidden">
       {/* Header / Logo */}
       <div className="flex flex-col px-6 py-10">
         <div className="flex items-center justify-between mb-2">
@@ -115,7 +115,7 @@ export default function DashboardSidebar({ open = true, onClose }: DashboardSide
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 overflow-y-auto px-4 space-y-1 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto overscroll-y-contain px-4 py-2 space-y-1 custom-scrollbar">
         <div className="px-3 mb-4 text-[10px] font-bold uppercase tracking-widest text-gray-400/80">
           Navigation
         </div>
@@ -212,30 +212,32 @@ export default function DashboardSidebar({ open = true, onClose }: DashboardSide
 
   return (
     <>
-      <aside className="hidden w-72 shrink-0 lg:block bg-white h-screen sticky top-0">
+      <aside className="hidden w-[280px] shrink-0 lg:block bg-white h-screen sticky top-0 border-r border-gray-100 z-30">
         <SidebarContent />
       </aside>
 
       <AnimatePresence>
         {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onClose}
-              className="fixed inset-0 z-40 bg-gray-900/60 backdrop-blur-md lg:hidden"
-            />
-            <motion.aside
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className="fixed left-0 top-0 z-50 h-full w-72 lg:hidden shadow-[20px_0_50px_rgba(0,0,0,0.2)]"
-            >
-              <SidebarContent />
-            </motion.aside>
-          </>
+           <>
+             {/* Strict scroll lock backdrop */}
+             <motion.div
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               transition={{ duration: 0.2 }}
+               onClick={onClose}
+               className="fixed inset-0 z-40 bg-gray-900/40 backdrop-blur-sm lg:hidden touch-none"
+             />
+             <motion.aside
+               initial={{ x: '-100%' }}
+               animate={{ x: 0 }}
+               exit={{ x: '-100%' }}
+               transition={{ duration: 0.3, ease: "easeInOut" }}
+               className="fixed left-0 top-0 z-50 h-[100dvh] w-[280px] lg:hidden bg-white shadow-2xl flex flex-col overscroll-contain"
+             >
+               <SidebarContent />
+             </motion.aside>
+           </>
         )}
       </AnimatePresence>
     </>
